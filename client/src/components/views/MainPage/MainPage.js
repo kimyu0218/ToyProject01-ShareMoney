@@ -19,27 +19,9 @@ function MainPage() {
     useEffect( () => {
         const endpoint = `${PROXY_SERVER}${API_URL}?authkey=${API_KEY}&data=AP01`
         console.log(endpoint)
-        fetchCurrency(endpoint)
+        //fetchCurrency(endpoint)
     }, []);
 
-    const fetchCurrency = (endpoint) => {
-        fetch(endpoint)
-            .then(response => response.json())
-            .then(response => {
-                console.log(response)
-            })
-    }
-
-    /*const getCurrency = (event) => {
-        let find = countries.filter((e) => {
-            return e.country.toLowerCase().trim() === Keyword.toLowerCase().trim()
-        })
-        setCountry(find[0].code)
-        console.log("find: ", find[0].code)
-        console.log("country: ", Country)
-        const endpoint = `${API_URL}?access_key=${API_KEY}&source=USD&currencies=${Country}`
-        fetchCurrency(endpoint)
-    }*/
 
     return (
         <div style={{
