@@ -3,7 +3,9 @@ import {
     LOGIN_USER,
     REGISTER_USER,
     AUTH_USER,
-    LOGOUT_USER
+    LOGOUT_USER,
+    CHECK_DUPLICATE_EMAIL,
+    CHECK_DUPLICATE_ID
 } from './types';
 
 // 1. 로그인
@@ -26,6 +28,7 @@ export function registerUser(dataToSubmit) {
         payload: request
     }
 }
+
 // 3. 인증
 export function auth(){
     const request = axios.get('/api/users/auth')
@@ -43,6 +46,26 @@ export function logoutUser(){
 
     return {
         type: LOGOUT_USER,
+        payload: request
+    }
+}
+// 5. 아이디 중복 확인
+export function checkDuplicateId(dataToSubmit) {
+
+    const request = axios.post('/api/users/checkId', dataToSubmit) // 서버에 get 요청
+        .then(response => response.data)
+    return {
+        type: CHECK_DUPLICATE_ID,
+        payload: request
+    }
+}
+// 6. 이메일 중복 확인
+export function checkDuplicateEmail(dataToSubmit) {
+
+    const request = axios.post('/api/users/checkEmail', dataToSubmit) // 서버에 get 요청
+        .then(response => response.data)
+    return {
+        type: CHECK_DUPLICATE_EMAIL,
         payload: request
     }
 }

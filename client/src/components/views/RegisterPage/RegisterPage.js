@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { registerUser } from '../../../_actions/user_action';
+import { registerUser, checkDuplicateEmail, checkDuplicateId } from '../../../_actions/user_action';
 
 import { Form, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
@@ -23,6 +23,27 @@ function RegisterPage(props) {
     const onSubmitHandler = (event) => {
         event.preventDefault();
 
+        let check1 = { id: Id }
+
+        dispatch(checkDuplicateId(check1))
+            .then(response => {
+                if (response.payload.permit) {
+
+                } else {
+                    return alert("사용할 수 없는 아이디입니다.")
+                }
+            })
+
+        let check2 = { email: Email }
+
+        dispatch(checkDuplicateEmail(check2))
+            .then(response => {
+                if (response.payload.permit) {
+                } else {
+                    return alert("사용할 수 없는 이메일입니다.")
+                }
+            })
+        
         let body = {
             email: Email,
             id: Id,
@@ -32,9 +53,10 @@ function RegisterPage(props) {
         dispatch(registerUser(body))
             .then(response => {
                 if (response.payload.success) {
+                    alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.")
                     props.history.push('/login')
                 } else {
-                    alert('아이디나 비밀번호가 일치하지 않습니다.')
+                    alert("Failed to sign up")
                 }
             })
     }
@@ -91,7 +113,6 @@ function RegisterPage(props) {
                     {
                         required: true,
                         message: 'Please input your Id!',
-                        whitespace: true,
                     },
                     ]}
                 >

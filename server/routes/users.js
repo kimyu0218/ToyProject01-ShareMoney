@@ -60,4 +60,38 @@ router.get("/logout", auth, (req, res) => {
     });
 });
 
+router.post('/checkId', (req, res) => {
+
+    User.findOne({ id: req.body.id }, (err, user) => {
+      if(!user) {
+        return res.json({
+          permit: true,
+          message: "사용할 수 있는 아이디입니다."
+        })
+      } else {
+        return res.json({
+          permit: false,
+          message: "사용할 수 없는 아이디입니다."
+        })
+      }
+    })
+})
+
+router.post('/checkEmail', (req, res) => {
+
+    User.findOne({ email: req.body.email }, (err, user) => {
+      if(!user) {
+        return res.json({
+          permit: true,
+          message: "사용할 수 있는 이메일입니다."
+        })
+      } else {
+        return res.json({
+          permit: false,
+          message: "사용할 수 없는 이메일입니다."
+        })
+      }
+    })
+})
+
 module.exports = router;
