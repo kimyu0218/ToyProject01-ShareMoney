@@ -25,6 +25,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use('/api/users', require('./routes/users'));
+app.use('/api/travels', require('./routes/travels'));
 
 if (process.env.NODE_ENV === "production") {
  

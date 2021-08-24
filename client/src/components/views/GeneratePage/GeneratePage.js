@@ -1,24 +1,64 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { useDispatch } from "react-redux";
+import { generateTravel, checkDuplicateTravelId } from '../../../_actions/travel_action';
 
 import { Form, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 
-function GeneratePage() {
+function GeneratePage(props) {
+
+    const dispatch = useDispatch();
 
     const [Destination, setDestination] = useState("");
     const [TravelId, setTravelId] = useState("");
+    const [Personnel, setPersonnel] = useState();
 
     const onDestinationHandler = (event) => { setDestination(event.currentTarget.value); }
     const onTravelIdHandler = (event) => { setTravelId(event.currentTarget.value); }
+    const onPersonelHandler= (event) => { setPersonnel(Number(event.currentTarget.value)); }
 
-    const onSubmitHandler = () => {
+    const countries = [
+        "아랍에미리트", "호주", "바레인", "브루나이", "캐나다", "스위스",
+        "덴마아크", "영국", "홍콩", "인도네시아", "일본", "한국", "쿠웨이트",
+        "말레이지아", "노르웨이", "뉴질랜드", "사우디", "스웨덴", "싱가포르",
+        "태국", "미국"
+    ]
+
+    const exist = (country) => {
+        if(country === Destination) return true
+    }
+    const onSearch = () => { return countries.find(exist) }
+
+    const onSubmitHandler = (event) => {
+        event.preventDefault();
         
+        if(!onSearch()) return alert("지원하지 않는 나라입니다.")
+
+        let check = { travel_id: TravelId }
+        
+        dispatch(checkDuplicateTravelId(check))
+            .then(response => {
+                if (!response.payload.permit) {
+                    return alert("사용할 수 없는 아이디입니다.")
+                }
+            })
+
         let body = {
             destination: Destination,
-            travelId: TravelId
+            travel_id: TravelId,
+            personnel: Personnel,
+            owner: localStorage.getItem('userId')
         }
 
-        console.log(body)
+        dispatch(generateTravel(body))
+            .then(response => {
+                if (response.payload.success) {
+                    localStorage.setItem('country', Destination)
+                    props.history.push('/main')
+                } else {
+                    return alert("Failed to generate")
+                }
+            })
     }
 
     const formItemLayout = {
@@ -45,7 +85,7 @@ function GeneratePage() {
         }}>
             <Form
                 {...formItemLayout}
-                name="join"
+                name="generate"
                 onFinish={onSubmitHandler}
                 scrollToFirstError
                 >
@@ -59,7 +99,7 @@ function GeneratePage() {
                     },
                     ]}
                 >
-                    <Input value={Destination} onChange={onDestinationHandler}/>
+                    <Input value={Destination} placeholder="Country" onChange={onDestinationHandler}/>
                 </Form.Item>
 
                 <Form.Item
@@ -68,11 +108,24 @@ function GeneratePage() {
                     rules={[
                     {
                         required: true,
-                        message: 'Please input your TravelId! It will be used to invite others.',
+                        message: 'Please input your Travel Id!',
                     },
                     ]}
                 >
-                    <Input value={TravelId} placeholder="It will be used to invite others." onChange={onTravelIdHandler}/>
+                    <Input value={TravelId} placeholder="This will be used to invite others." onChange={onTravelIdHandler}/>
+                </Form.Item>
+
+                <Form.Item
+                    name="personnel"
+                    label="Personnel"
+                    rules={[
+                    {
+                        required: true,
+                        message: 'Please input Personnel!',
+                    },
+                    ]}
+                >
+                    <Input value={Personnel} onChange={onPersonelHandler}/>
                 </Form.Item>
 
                 <Form.Item {...tailFormItemLayout}>

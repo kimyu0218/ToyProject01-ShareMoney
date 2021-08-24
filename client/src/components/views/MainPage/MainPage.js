@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react'
+//import { useDispatch } from "react-redux";
 import { withRouter } from "react-router-dom"
 import Axios from 'axios';
 
-import { Input, InputNumber, Button } from 'antd'
+import { Input, Button } from 'antd'
 import { API_URL, API_KEY, PROXY_SERVER } from './Sections/currency_api'
 
 function MainPage(props) {
 
-    const [Country, setCountry] = useState("")    // 국가
-    const [Currency, setCurrency] = useState(0)   // 환율
-    const [Result, setResult] = useState([])      // 환율 배열
+    //const dispatch = useDispatch();
+
+    const Country = localStorage.getItem('country') // 국가
+    const [Currency, setCurrency] = useState(0)     // 환율
+    const [Result, setResult] = useState([])        // 환율 배열
     const [Load, setLoad] = useState(false)
     const [LoadUnit, setLoadUnit] = useState(false)
     const [CurrencyUnit, setCurrencyUnit] = useState("")
@@ -28,7 +31,6 @@ function MainPage(props) {
     const [PublicConsumption, setPublicConsumption] = useState(0)
 
     const { Search } = Input;
-    const onCountryHandler = (event) => { setCountry(event.currentTarget.value); }
     const onTravelAccountHandler = (event) => { setTravelAccount(Number(event.currentTarget.value)); }
     const onTravelAccountHandler_Public = (event) => { setTravelAccount_Public(Number(event.currentTarget.value)); }
     const onOwnCashHandler = (event) => { setOwnCash(Number(event.currentTarget.value)); }
@@ -98,17 +100,12 @@ function MainPage(props) {
                 { Load && 
                     <div style={{ height: 'auto' }}>
                         <Search
-                            style={{ width: '300px', margin: '10px'}}
-                            placeholder="country"
-                            value={Country}
-                            onChange={onCountryHandler}
-                            onSearch={onSearch}
-                        />
-                        <InputNumber
-                            style={{ width: '300px', margin: '10px' }}
-                            step="0.000001"
-                            readOnly={true}
+                            style={{ width: '300px', margin: '10px', textAlign: 'right'}}
+                            prefix="환율"
+                            suffix="원"
                             value={Currency}
+                            readOnly={true}
+                            onSearch={onSearch}
                         />
                     </div>
                 }
@@ -129,19 +126,19 @@ function MainPage(props) {
                 backgroundColor: '#bae7ff',
                 borderRadius: '1em'
             }}>
-                여행 통장
+                공동 통장
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
                     <Input 
                         size="small"
                         suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={TravelAccount}
                         onChange={onTravelAccountHandler}
                     />
                     <Input 
                         size="small"
                         suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={TravelAccount_Public}
                         onChange={onTravelAccountHandler_Public}
                     />
@@ -158,14 +155,14 @@ function MainPage(props) {
                     <Input 
                         size="small"
                         suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={OwnCash}
                         onChange={onOwnCashHandler}
                     />
                     <Input 
                         size="small"
                         suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={OwnCash_Public}
                         onChange={onOwnCashHandler_Public}
                     />
@@ -175,14 +172,14 @@ function MainPage(props) {
                     <Input 
                         size="small"
                         suffix={CurrencyUnit} 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={ForeignCash}
                         onChange={onForeignCashHandler}
                     />
                     <Input 
                         size="small"
                         suffix={CurrencyUnit} 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={ForeignCash_Public}
                         onChange={onForeignCashHandler_Public}
                     />
@@ -194,19 +191,19 @@ function MainPage(props) {
                 backgroundColor: '#bae7ff',
                 borderRadius: '1em'
             }}>
-                개인 카드
+                개인 카드/통장
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
                     <Input 
                         size="small"
                         suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={OwnCard}
                         onChange={onOwnCardHandler}
                     />
                     <Input 
                         size="small"
                         suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={OwnCard_Public}
                         onChange={onOwnCardHandler_Public}
                     />
@@ -216,14 +213,14 @@ function MainPage(props) {
                     <Input 
                         size="small"
                         suffix={CurrencyUnit} 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={ForeignCard}
                         onChange={onForeignCardHandler}
                     />
                     <Input 
                         size="small"
                         suffix={CurrencyUnit} 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px" }}
+                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
                         value={ForeignCard_Public}
                         onChange={onForeignCardHandler_Public}
                     />

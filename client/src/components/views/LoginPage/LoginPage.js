@@ -29,6 +29,7 @@ function LoginPage(props) {
         dispatch(loginUser(body))
             .then(response => {
                 if (response.payload.loginSuccess) {
+                    localStorage.setItem('userId', Id)
                     props.history.push('/')
                 } else {
                     alert('아이디나 비밀번호가 일치하지 않습니다.')
@@ -39,7 +40,7 @@ function LoginPage(props) {
     return (
         <div style={{
             display: 'flex', justifyContent: 'center', alignItems: 'center',
-            width: '100%', height: '100vh'
+            width: '100%', height: '80vh'
         }}>
             <Form
                 name="normal_login"

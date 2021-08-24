@@ -5,7 +5,6 @@ const { auth } = require("../middleware/auth");
 
 router.post("/register", (req, res) => {
     const user = new User(req.body);
-    console.log(user)
     user.save((err, doc) => {
         if (err) return res.json({ success: false, err });
         return res.status(200).json({
@@ -61,7 +60,6 @@ router.get("/logout", auth, (req, res) => {
 });
 
 router.post('/checkId', (req, res) => {
-
     User.findOne({ id: req.body.id }, (err, user) => {
       if(!user) {
         return res.json({
@@ -78,7 +76,6 @@ router.post('/checkId', (req, res) => {
 })
 
 router.post('/checkEmail', (req, res) => {
-
     User.findOne({ email: req.body.email }, (err, user) => {
       if(!user) {
         return res.json({
