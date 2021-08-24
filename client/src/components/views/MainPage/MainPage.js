@@ -46,6 +46,8 @@ function MainPage(props) {
     const getCurrency = (endpoint) => {
         Axios.get(endpoint, {})
             .then(response => {
+                console.log(response)
+                if(response.data === null) return;
                 setResult(response.data)
                 setLoad(true);
             })
