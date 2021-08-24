@@ -17,7 +17,7 @@ function MyPage() {
 
     const loadTravels = () => {
 
-        let body = { owner: localStorage.getItem('userId') }
+        let body = { user_id: localStorage.getItem('userId') }
 
         dispatch(findTravel(body))
             .then(response => {
@@ -30,9 +30,15 @@ function MyPage() {
             })
     }
 
-    const Delete = (id) => {
+    const Delete = (id, persons_) => {
 
-        let body = { _id: id }
+        let index = persons_.indexOf(localStorage.getItem('userId'))
+        persons_.splice(index, 1)
+
+        let body = { 
+            _id: id,
+            persons: persons_
+        }
 
         dispatch(deleteTravel(body))
             .then(response => {
@@ -50,7 +56,7 @@ function MyPage() {
                 <td><a href="#">{travel.travel_id}</a></td>
                 <td>{travel.destination}</td>
                 <td>{travel.personnel}</td>
-                <td><button onClick={() => Delete(travel._id)}>Remove</button></td>
+                <td><button onClick={() => Delete(travel._id, travel.persons)}>Remove</button></td>
             </tr>
         )
     })

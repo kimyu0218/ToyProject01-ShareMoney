@@ -3,6 +3,7 @@ import {
     GENERTATE_TRAVEL,
     CHECK_DUPLICATE_TRAVEL_ID,
     JOIN_TRAVEL,
+    EDIT_PERSONS,
     FIND_MY_TRAVEL,
     DELETE_TRAVEL
 } from './types';
@@ -33,6 +34,16 @@ export function joinTravel(dataToSubmit) {
 
     return {
         type: JOIN_TRAVEL,
+        payload: request
+    }
+}
+
+export function editPersons(dataToSubmit) {
+    const request = axios.post('/api/travels/editPersons', dataToSubmit)
+    .then(response => response.data)
+
+    return {
+        type: EDIT_PERSONS,
         payload: request
     }
 }

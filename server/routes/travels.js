@@ -46,8 +46,16 @@ router.post('/join', (req, res) => {
   })
 })
 
+router.post('/editPersons', (req, res) => {
+  Travel.findOneAndUpdate({ travel_id: req.body.travel_id }, { persons: req.body.persons })
+  .exec((err, doc) => {
+    if (err) return res.status(400).send(err)
+    res.status(200).json({ success: true, doc })
+  })
+})
+
 router.post('/find', (req, res) => {
-  Travel.find({ owner: req.body.owner })
+  Travel.find({ persons: req.body.user_id })
     .exec((err, travels) => {
       if(err) return res.status(400).send(err)
       return res.status(200).json({ success: true, travels })
@@ -55,7 +63,7 @@ router.post('/find', (req, res) => {
 })
 
 router.post('/delete', (req, res) => {
-  Travel.findOneAndDelete({ _id: req.body._id })
+  Travel.findOneAndUpdate({ _id: req.body._id }, { persons: req.body.persons })
     .exec((err, doc) => {
       if (err) return res.status(400).send(err)
       res.status(200).json({ success: true, doc })

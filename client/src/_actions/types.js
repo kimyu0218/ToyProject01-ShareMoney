@@ -8,5 +8,12 @@ export const CHECK_DUPLICATE_EMAIL = "check_duplicate_email";
 export const GENERTATE_TRAVEL = "generate_travel";
 export const CHECK_DUPLICATE_TRAVEL_ID = "check_duplicate_travel_id";
 export const JOIN_TRAVEL = "join_travel";
+export const EDIT_PERSONS = "edit_persons";
 export const FIND_MY_TRAVEL = "find_my_travel";
 export const DELETE_TRAVEL = "delete_travel";
+
+export const SAVE_CONSUMPTION = "save_consumption";
+export const BRING_UP_CONSUMPTION = "bring_up_consumption";
+
+export const SAVE_PUBLIC = "save_public";
+export const BRING_UP_PUBLIC = "bring_up_public";

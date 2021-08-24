@@ -47,14 +47,14 @@ function GeneratePage(props) {
             destination: Destination,
             travel_id: TravelId,
             personnel: Personnel,
-            owner: localStorage.getItem('userId')
+            persons: [localStorage.getItem('userId')]
         }
 
         dispatch(generateTravel(body))
             .then(response => {
                 if (response.payload.success) {
                     localStorage.setItem('country', Destination)
-                    props.history.push('/main')
+                    props.history.push('/detail')
                 } else {
                     return alert("Failed to generate")
                 }

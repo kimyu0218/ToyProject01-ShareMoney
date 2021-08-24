@@ -7,7 +7,7 @@ import {
 
 import LoginPage from './components/views/LoginPage/LoginPage'
 import RegisterPage from './components/views/RegisterPage/RegisterPage'
-import MainPage from './components/views/MainPage/MainPage'
+import DetailPage from './components/views/DetailPage/DetailPage'
 import LandingPage from "./components/views/LandingPage/LandingPage"
 import GeneratePage from "./components/views/GeneratePage/GeneratePage"
 import JoinPage from "./components/views/JoinPage/JoinPage"
@@ -25,7 +25,7 @@ function App() {
           <Route exact path="/" component={Auth(LandingPage, true)} />
           <Route exact path="/join" component={Auth(JoinPage, true)} />
           <Route exact path="/mypage" component={Auth(MyPage, true)} />
-          <Route exact path="/main" component={Auth(MainPage, true)} />
+          <Route exact path="/detail" component={Auth(DetailPage, true)} />
           <Route exact path="/generate" component={Auth(GeneratePage, true)} />
           <Route exact path = "/login" component = {Auth(LoginPage, false)} />
           <Route exactzpath = "/register" component = {Auth(RegisterPage, false)} />

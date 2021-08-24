@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
-//import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { withRouter } from "react-router-dom"
 import Axios from 'axios';
 
 import { Input, Button } from 'antd'
 import { API_URL, API_KEY, PROXY_SERVER } from './Sections/currency_api'
 
-function MainPage(props) {
+function EditPage(props) {
 
-    //const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
     const Country = localStorage.getItem('country') // 국가
     const [Currency, setCurrency] = useState(0)     // 환율
@@ -56,6 +56,22 @@ function MainPage(props) {
     useEffect( () => {
         const endpoint = `${PROXY_SERVER}${API_URL}?authkey=${API_KEY}&data=AP01`
         getCurrency(endpoint)
+
+        let body = {
+            owner: localStorage.getItem('userId'),
+            travel_id: localStorage.getItem('travelId')
+        }
+
+        /*dispatch(getTravelInfo(body))
+            .then(response => {
+                if (response.payload.success) {
+                    // 기존 정보 세팅
+                    setLoad(true)
+                } else {
+                    return alert("Falied to load")
+                }
+            })
+        */
     }, []);
 
     const exist = (country) => {
@@ -271,4 +287,4 @@ function MainPage(props) {
     )
 }
 
-export default withRouter(MainPage)
+export default withRouter(EditPage)

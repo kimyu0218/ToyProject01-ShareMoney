@@ -26,6 +26,8 @@ app.use(cookieParser());
 
 app.use('/api/users', require('./routes/users'));
 app.use('/api/travels', require('./routes/travels'));
+app.use('/api/consumptions', require('./routes/consumptions'));
+app.use('/api/publics', require('./routes/publics'));
 
 if (process.env.NODE_ENV === "production") {
  

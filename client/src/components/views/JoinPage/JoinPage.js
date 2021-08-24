@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from "react-redux";
-import { generateTravel, joinTravel } from '../../../_actions/travel_action';
+import { joinTravel, editPersons } from '../../../_actions/travel_action';
 
 import { Form, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
@@ -20,32 +20,38 @@ function JoinPage(props) {
         dispatch(joinTravel(body))
             .then(response => {
                 if (response.payload.success) {
-
                     localStorage.setItem('country', response.payload.data.destination)
-
-                    let generate = {
-                        destination: localStorage.getItem('country'),
-                        travel_id: response.payload.data.travel_id,
-                        personnel: response.payload.data.personnel,
-                        owner: localStorage.getItem('userId')
+                    var persons_ = response.payload.data.persons
+                    for(let i = 0; i < persons_.length; i++){
+                        if(persons_[i] === localStorage.getItem('userId')) {
+                            alert('이미 추가한 아이디입니다. 마이 페이지로 이동합니다.')
+                            props.history.push('/mypage')
+                        }
                     }
-                    
-                    generateHandler(generate)
+                    persons_.push(localStorage.getItem('userId'))
 
+                    if(persons_.length > response.payload.data.personnel) 
+                        return alert('해당 인원 수를 초과했습니다.')
+
+                    let edit = {
+                        travel_id: TravelId,
+                        persons: persons_
+                    }
+                    editHandler(edit)
                 } else {
                     return alert( "존재하지 않는 아이디입니다.")
                 }
             })
     }
 
-    const generateHandler = (body) => {
+    const editHandler = (body) => {
 
-        dispatch(generateTravel(body))
+        dispatch(editPersons(body))
             .then(response => {
                 if (response.payload.success) {
-                    props.history.push('/main')
+                    props.history.push('/detail')
                 } else {
-                    return alert("Failed to generate")
+                    return alert("Failed to edit")
                 }
             })
     }
