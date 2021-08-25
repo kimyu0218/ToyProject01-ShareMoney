@@ -7,7 +7,7 @@ function Footer() {
             flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', fontSize:'1rem'
         }}>
-           <p style={{ margin: '2px' }}> Logo </p>
+           <p style={{ margin: '2px' }}>ShareMoney</p>
         </div>
     )
 }

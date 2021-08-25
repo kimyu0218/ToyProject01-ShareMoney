@@ -156,13 +156,17 @@ function ExpensePage(props) {
         if(Edit === "true") { // Edit 모드
             updateEdit()
             localStorage.setItem('edit', false)
+            props.history.push('/edit/success')
         }
         else if(Join === "true") { // Join 모드
             updateJoin()
             localStorage.setItem('join', false)
+            props.history.push('/join/success')
         }
-        else { initial() } // Generate 모드
-        props.history.push('/edit')
+        else {  // Generate 모드
+            initial()
+            props.history.push('/generate/success')
+        } 
     }
 
     const initial = () => { // Consumption과 Public 정보 생성하기 (Generate 모드)
