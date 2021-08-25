@@ -30,6 +30,8 @@ function LoginPage(props) {
             .then(response => {
                 if (response.payload.loginSuccess) {
                     localStorage.setItem('userId', Id)
+                    localStorage.setItem('edit', false)
+                    localStorage.setItem('join', false)
                     props.history.push('/')
                 } else {
                     alert('아이디나 비밀번호가 일치하지 않습니다.')

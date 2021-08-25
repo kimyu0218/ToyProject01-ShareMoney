@@ -8,7 +8,7 @@ function LeftMenu(props) {
       <a href="/">Home</a>
     </Menu.Item>
     <Menu.Item key="otherPage">
-      <a href="/mypage">My Travels</a>
+      <a href="/edit">My Travels</a>
     </Menu.Item>
   </Menu>
   )

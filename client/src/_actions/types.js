@@ -14,6 +14,8 @@ export const DELETE_TRAVEL = "delete_travel";
 
 export const SAVE_CONSUMPTION = "save_consumption";
 export const BRING_UP_CONSUMPTION = "bring_up_consumption";
+export const UPDATE_CONSUMPTION = "update_consumption";
 
 export const SAVE_PUBLIC = "save_public";
 export const BRING_UP_PUBLIC = "bring_up_public";
+export const UPDATE_PUBLIC = "update_public";

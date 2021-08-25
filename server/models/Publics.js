@@ -2,21 +2,10 @@ const mongoose = require('mongoose');
 
 const publicSchema = mongoose.Schema({
     travel_id: {
-        type: String
+        type: String,
+        unique: 1
     },
-    travel_account: {
-        type: Number
-    },
-    own_cash: {
-        type: Number
-    },
-    foreign_cash: {
-        type: Number
-    },
-    own_card: {
-        type: Number
-    },
-    foreign_card: {
+    cost: {
         type: Number
     }
 })

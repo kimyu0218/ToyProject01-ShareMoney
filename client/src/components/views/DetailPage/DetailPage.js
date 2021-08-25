@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch } from "react-redux";
 import { withRouter } from "react-router-dom"
 import Axios from 'axios';
+import { saveConsumption, bringupConsumption, updateConsumption } from '../../../_actions/consumption_action'
+import { savePublic, bringupPublic, updatePublic } from '../../../_actions/public_action'
 
 import { Input, Button } from 'antd'
 import { API_URL, API_KEY, PROXY_SERVER } from './Sections/currency_api'
@@ -10,6 +12,8 @@ function DetailPage(props) {
 
     const dispatch = useDispatch();
 
+    const Join = localStorage.getItem('join')
+    const Edit = localStorage.getItem('edit')
     const Country = localStorage.getItem('country') // 국가
     const [Currency, setCurrency] = useState(0)     // 환율
     const [Result, setResult] = useState([])        // 환율 배열
@@ -17,6 +21,8 @@ function DetailPage(props) {
     const [LoadUnit, setLoadUnit] = useState(false)
     const [CurrencyUnit, setCurrencyUnit] = useState("")
 
+    const [Cost, setCost] = useState(0)
+    const [preCost, setpreCost] = useState(0)
     const [TravelAccount, setTravelAccount] = useState(0)
     const [TravelAccount_Public, setTravelAccount_Public] = useState(0)
     const [OwnCash, setOwnCash] = useState(0)
@@ -56,7 +62,58 @@ function DetailPage(props) {
     useEffect( () => {
         const endpoint = `${PROXY_SERVER}${API_URL}?authkey=${API_KEY}&data=AP01`
         getCurrency(endpoint)
+
+        if(Edit === "true") {
+            bringCon()
+            bringPub()
+        }
+        else if(Join === "true") {
+            bringPub()
+        }
+        
     }, []);
+
+    const bringCon = () => {
+
+        let con = {
+            user_id: localStorage.getItem('userId'),
+            travel_id: localStorage.getItem('travelId')
+        }
+        
+        dispatch(bringupConsumption(con))
+            .then(response => {
+                if (response.payload.success) {
+                    setTravelAccount(response.payload.data.travel_account)
+                    setTravelAccount_Public(response.payload.data.travel_account_pub)
+                    setOwnCash(response.payload.data.own_cash)
+                    setOwnCash_Public(response.payload.data.own_cash_pub)
+                    setForeignCash(response.payload.data.foreign_cash)
+                    setForeignCash_Public(response.payload.data.foreign_cash_pub)
+                    setOwnCard(response.payload.data.own_card)
+                    setOwnCard_Public(response.payload.data.own_card_pub)
+                    setForeignCard(response.payload.data.foreign_card)
+                    setForeignCard_Public(response.payload.data.foreign_card_pub)
+                    setpreCost(response.payload.data.travel_account_pub
+                        +response.payload.data.own_cash_pub+response.payload.data.foreign_cash_pub
+                        +response.payload.data.own_card_pub+response.payload.data.foreign_card_pub)
+                } else {
+                    return alert("Failed to bring up my consumption")
+                }
+            })
+    }
+    const bringPub = () => {
+
+        let pub = { travel_id: localStorage.getItem('travelId') }
+        
+        dispatch(bringupPublic(pub))
+            .then(response => {
+                if (response.payload.success) {
+                    setCost(response.payload.data.cost)
+                } else {
+                    return alert("Failed to bring up public")
+                }
+            })
+    }
 
     const exist = (country) => {
         let tmp = country.cur_nm.split(" ")
@@ -84,13 +141,151 @@ function DetailPage(props) {
     }
 
     // 소비 내역 DB에 저장하기
-    const onSave = () => {
-        // 소비 내역 저장
-        let body = { 
+    const onSave = (event) => {
+        event.preventDefault();
+        if(Edit === "true") {
+            updateEdit()
+            localStorage.setItem('edit', false)
         }
-        console.log(body)
-        // 공동 소비 내역 저장
+        else if(Join === "true") {
+            updateJoin()
+            localStorage.setItem('join', false)
+        }
+        else { initial() }
+        props.history.push('/')
+    }
 
+    const initial = () => { // generate
+
+        let con = { 
+            user_id: localStorage.getItem('userId'),
+            travel_id: localStorage.getItem('travelId'),
+            travel_account: TravelAccount,
+            travel_account_pub: TravelAccount_Public,
+            own_cash: OwnCash,
+            own_cash_pub: OwnCard_Public,
+            foreign_cash: ForeignCash,
+            foreign_cash_pub: ForeignCash_Public,
+            own_card: OwnCard,
+            own_card_pub: OwnCard_Public,
+            foreign_card: ForeignCard,
+            foreign_card_pub: ForeignCard_Public
+        }
+
+        dispatch(saveConsumption(con))
+            .then(response => {
+                if (response.payload.success) {
+                    alert('Success!')
+                } else {
+                    return alert("Failed to generate")
+                }
+            })
+
+        let sum = TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
+                + OwnCard_Public + ForeignCard_Public
+
+        let pub = { 
+            travel_id: localStorage.getItem('travelId'),
+            cost: sum 
+        }
+
+        dispatch(savePublic(pub))
+            .then(response => {
+                if (response.payload.success) {
+                    alert('Success!')
+                } else {
+                    return alert("Failed to generate")
+                }
+            })
+    }
+
+    const updateEdit = () => { // edit : consumption과 public 모두 update
+
+        let con = { 
+            user_id: localStorage.getItem('userId'),
+            travel_id: localStorage.getItem('travelId'),
+            travel_account: TravelAccount,
+            travel_account_pub: TravelAccount_Public,
+            own_cash: OwnCash,
+            own_cash_pub: OwnCard_Public,
+            foreign_cash: ForeignCash,
+            foreign_cash_pub: ForeignCash_Public,
+            own_card: OwnCard,
+            own_card_pub: OwnCard_Public,
+            foreign_card: ForeignCard,
+            foreign_card_pub: ForeignCard_Public
+        }
+
+        dispatch(updateConsumption(con))
+            .then(response => {
+                if (response.payload.success) {
+                    alert('Edit!')
+                } else {
+                    return alert("Failed to edit")
+                }
+            })
+
+        let sum = (Cost - preCost) 
+                + TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
+                + OwnCard_Public + ForeignCard_Public
+        
+        let pub = { 
+            travel_id: localStorage.getItem('travelId'),
+            cost: sum 
+        }
+
+        dispatch(updatePublic(pub))
+            .then(response => {
+                if (response.payload.success) {
+                    alert('Edit!')
+                } else {
+                    return alert("Failed to edit")
+                }
+            })
+    }
+
+    const updateJoin = () => { // join : public만 update
+
+        let con = { 
+            user_id: localStorage.getItem('userId'),
+            travel_id: localStorage.getItem('travelId'),
+            travel_account: TravelAccount,
+            travel_account_pub: TravelAccount_Public,
+            own_cash: OwnCash,
+            own_cash_pub: OwnCard_Public,
+            foreign_cash: ForeignCash,
+            foreign_cash_pub: ForeignCash_Public,
+            own_card: OwnCard,
+            own_card_pub: OwnCard_Public,
+            foreign_card: ForeignCard,
+            foreign_card_pub: ForeignCard_Public
+        }
+
+        dispatch(saveConsumption(con))
+            .then(response => {
+                if (response.payload.success) {
+                    alert('Success!')
+                } else {
+                    return alert("Failed to generate")
+                }
+            })
+
+        let sum = Cost + TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
+                + OwnCard_Public + ForeignCard_Public
+
+        let pub = { 
+            travel_id: localStorage.getItem('travelId'),
+            cost: sum 
+        }
+
+        dispatch(updatePublic(pub))
+            .then(response => {
+                if (response.payload.success) {
+                    alert('Edit!')
+                } else {
+                    return alert("Failed to edit")
+                }
+            })
     }
 
     return (

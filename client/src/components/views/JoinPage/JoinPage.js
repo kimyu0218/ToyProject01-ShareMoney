@@ -24,8 +24,8 @@ function JoinPage(props) {
                     var persons_ = response.payload.data.persons
                     for(let i = 0; i < persons_.length; i++){
                         if(persons_[i] === localStorage.getItem('userId')) {
-                            alert('이미 추가한 아이디입니다. 마이 페이지로 이동합니다.')
-                            props.history.push('/mypage')
+                            alert('이미 추가한 아이디입니다. Edit 페이지로 이동합니다.')
+                            props.history.push('/edit')
                         }
                     }
                     persons_.push(localStorage.getItem('userId'))
@@ -49,6 +49,7 @@ function JoinPage(props) {
         dispatch(editPersons(body))
             .then(response => {
                 if (response.payload.success) {
+                    localStorage.setItem('join', true)
                     props.history.push('/detail')
                 } else {
                     return alert("Failed to edit")

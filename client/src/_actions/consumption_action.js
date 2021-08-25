@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {
     SAVE_CONSUMPTION,
-    BRING_UP_CONSUMPTION
+    BRING_UP_CONSUMPTION,
+    UPDATE_CONSUMPTION
 } from './types';
 
 export function saveConsumption(dataToSubmit) {
@@ -20,6 +21,16 @@ export function bringupConsumption(dataToSubmit) {
 
     return {
         type: BRING_UP_CONSUMPTION,
+        payload: request
+    }
+}
+
+export function updateConsumption(dataToSubmit) {
+    const request = axios.post('/api/consumptions/update', dataToSubmit)
+    .then(response => response.data)
+
+    return {
+        type: UPDATE_CONSUMPTION,
         payload: request
     }
 }

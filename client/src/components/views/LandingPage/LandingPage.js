@@ -21,7 +21,7 @@ function LandingPage() {
                 </div>
                 or
                 <div style={{ margin: '10px' }}>
-                    <a href="/join"> Join </a> / <a href="/mypage"> Edit </a>
+                    <a href="/join"> Join </a> / <a href="/edit"> Edit </a>
                 </div>
             </div>
         </div>

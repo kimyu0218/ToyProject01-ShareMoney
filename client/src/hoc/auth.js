@@ -9,23 +9,22 @@ export default function Auth (SpecificComponent, option, adminRoute = null) {
         const dispatch = useDispatch();
 
         useEffect(() => {
-
             dispatch(auth()).then(response => {
-                if (!response.payload.isAuth) { // 로그인 상태 X
+                if (!response.payload.isAuth) {
                     if (option) {
                         props.history.push('/login')
                     }
-                } else { // 로그인 상태
+                } else {
                     if (adminRoute && !response.payload.isAdmin) {
                         props.history.push('/')
-                    } else {
+                    }
+                    else {
                         if (option === false) {
                             props.history.push('/')
                         }
                     }
                 }
             })
-
         }, [])
 
         return (
