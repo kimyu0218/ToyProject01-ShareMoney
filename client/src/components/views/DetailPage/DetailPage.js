@@ -14,6 +14,7 @@ function DetailPage(props) {
 
     const Join = localStorage.getItem('join')
     const Edit = localStorage.getItem('edit')
+
     const Country = localStorage.getItem('country') // 국가
     const [Currency, setCurrency] = useState(0)     // 환율
     const [Result, setResult] = useState([])        // 환율 배열
@@ -22,7 +23,7 @@ function DetailPage(props) {
     const [CurrencyUnit, setCurrencyUnit] = useState("")
 
     const [Cost, setCost] = useState(0)
-    const [preCost, setpreCost] = useState(0)
+    const [PreCost, setPreCost] = useState(0)
     const [TravelAccount, setTravelAccount] = useState(0)
     const [TravelAccount_Public, setTravelAccount_Public] = useState(0)
     const [OwnCash, setOwnCash] = useState(0)
@@ -52,7 +53,6 @@ function DetailPage(props) {
     const getCurrency = (endpoint) => {
         Axios.get(endpoint, {})
             .then(response => {
-                console.log(response)
                 if(response.data === null) return;
                 setResult(response.data)
                 setLoad(true);
@@ -63,17 +63,17 @@ function DetailPage(props) {
         const endpoint = `${PROXY_SERVER}${API_URL}?authkey=${API_KEY}&data=AP01`
         getCurrency(endpoint)
 
-        if(Edit === "true") {
+        if(Edit === "true") { // Edit 모드
             bringCon()
             bringPub()
         }
-        else if(Join === "true") {
+        else if(Join === "true") { // Join 모드
             bringPub()
         }
         
     }, []);
 
-    const bringCon = () => {
+    const bringCon = () => { // Consumption 정보 가져오기 (Edit 모드)
 
         let con = {
             user_id: localStorage.getItem('userId'),
@@ -93,7 +93,7 @@ function DetailPage(props) {
                     setOwnCard_Public(response.payload.data.own_card_pub)
                     setForeignCard(response.payload.data.foreign_card)
                     setForeignCard_Public(response.payload.data.foreign_card_pub)
-                    setpreCost(response.payload.data.travel_account_pub
+                    setPreCost(response.payload.data.travel_account_pub
                         +response.payload.data.own_cash_pub+response.payload.data.foreign_cash_pub
                         +response.payload.data.own_card_pub+response.payload.data.foreign_card_pub)
                 } else {
@@ -101,7 +101,7 @@ function DetailPage(props) {
                 }
             })
     }
-    const bringPub = () => {
+    const bringPub = () => { // Public 정보 가져오기 (Edit 모드, Join 모드)
 
         let pub = { travel_id: localStorage.getItem('travelId') }
         
@@ -115,6 +115,7 @@ function DetailPage(props) {
             })
     }
 
+    // 해당 국가 환율 설정하기
     const exist = (country) => {
         let tmp = country.cur_nm.split(" ")
         if(tmp[0] === Country) return true
@@ -143,19 +144,20 @@ function DetailPage(props) {
     // 소비 내역 DB에 저장하기
     const onSave = (event) => {
         event.preventDefault();
-        if(Edit === "true") {
+
+        if(Edit === "true") { // Edit 모드
             updateEdit()
             localStorage.setItem('edit', false)
         }
-        else if(Join === "true") {
+        else if(Join === "true") { // Join 모드
             updateJoin()
             localStorage.setItem('join', false)
         }
-        else { initial() }
+        else { initial() } // Generate 모드
         props.history.push('/')
     }
 
-    const initial = () => { // generate
+    const initial = () => { // Consumption과 Public 정보 생성하기 (Generate 모드)
 
         let con = { 
             user_id: localStorage.getItem('userId'),
@@ -199,7 +201,7 @@ function DetailPage(props) {
             })
     }
 
-    const updateEdit = () => { // edit : consumption과 public 모두 update
+    const updateEdit = () => { // Consumption과 Public 모두 갱신하기 (Edit 모드)
 
         let con = { 
             user_id: localStorage.getItem('userId'),
@@ -218,14 +220,12 @@ function DetailPage(props) {
 
         dispatch(updateConsumption(con))
             .then(response => {
-                if (response.payload.success) {
-                    alert('Edit!')
-                } else {
+                if (!response.payload.success) {
                     return alert("Failed to edit")
                 }
             })
 
-        let sum = (Cost - preCost) 
+        let sum = (Cost - PreCost) 
                 + TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
                 + OwnCard_Public + ForeignCard_Public
         
@@ -236,15 +236,13 @@ function DetailPage(props) {
 
         dispatch(updatePublic(pub))
             .then(response => {
-                if (response.payload.success) {
-                    alert('Edit!')
-                } else {
+                if (!response.payload.success) {
                     return alert("Failed to edit")
                 }
             })
     }
 
-    const updateJoin = () => { // join : public만 update
+    const updateJoin = () => { // Consumption 생성 & Public 갱신하기 (Join 모드)
 
         let con = { 
             user_id: localStorage.getItem('userId'),
@@ -263,9 +261,7 @@ function DetailPage(props) {
 
         dispatch(saveConsumption(con))
             .then(response => {
-                if (response.payload.success) {
-                    alert('Success!')
-                } else {
+                if (!response.payload.success) {
                     return alert("Failed to generate")
                 }
             })
@@ -280,9 +276,7 @@ function DetailPage(props) {
 
         dispatch(updatePublic(pub))
             .then(response => {
-                if (response.payload.success) {
-                    alert('Edit!')
-                } else {
+                if (!response.payload.success) {
                     return alert("Failed to edit")
                 }
             })
