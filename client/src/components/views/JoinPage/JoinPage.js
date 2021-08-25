@@ -50,7 +50,7 @@ function JoinPage(props) {
             .then(response => {
                 if (response.payload.success) {
                     localStorage.setItem('join', true)
-                    props.history.push('/detail')
+                    props.history.push('/expense')
                 } else {
                     return alert("Failed to edit")
                 }

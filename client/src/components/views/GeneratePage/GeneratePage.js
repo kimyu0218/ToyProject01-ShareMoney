@@ -55,7 +55,7 @@ function GeneratePage(props) {
                 if (response.payload.success) {
                     localStorage.setItem('country', Destination)
                     localStorage.setItem('travelId', TravelId)
-                    props.history.push('/detail')
+                    props.history.push('/expense')
                 } else {
                     return alert("Failed to generate")
                 }

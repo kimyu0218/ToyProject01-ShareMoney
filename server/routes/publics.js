@@ -27,10 +27,28 @@ router.post('/bringup', (req, res) => {
 })
 
 router.post('/update', (req, res) => {
-  Public.findOneAndUpdate({ travel_id: req.body.travel_id }, { cost: req.body.cost })
+  Public.findOneAndUpdate({ travel_id: req.body.travel_id }, 
+    { 
+      cost: req.body.cost,
+      persons: req.body.persons,
+      contributions: req.body.contributions
+    })
   .exec((err, doc) => {
     if (err) return res.status(400).send(err)
     res.status(200).json({ success: true, doc })
+  })
+})
+
+router.post('/detail', (req, res) => {
+  Public.findOne({ travel_id: req.body.travel_id }, (err, pub) => {
+    if(pub) {
+      return res.json({
+        success: true,
+        data: pub
+      })
+    } else {
+      return res.json({ success: false })
+    }
   })
 })
 

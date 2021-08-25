@@ -19,3 +19,4 @@ export const UPDATE_CONSUMPTION = "update_consumption";
 export const SAVE_PUBLIC = "save_public";
 export const BRING_UP_PUBLIC = "bring_up_public";
 export const UPDATE_PUBLIC = "update_public";
+export const GET_PUBLIC_DETAIL = "get_public_detail";

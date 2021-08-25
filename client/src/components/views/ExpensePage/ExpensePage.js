@@ -8,7 +8,9 @@ import { savePublic, bringupPublic, updatePublic } from '../../../_actions/publi
 import { Input, Button } from 'antd'
 import { API_URL, API_KEY, PROXY_SERVER } from './Sections/currency_api'
 
-function DetailPage(props) {
+import './ExpensePage.css'
+
+function ExpensePage(props) {
 
     const dispatch = useDispatch();
 
@@ -24,6 +26,10 @@ function DetailPage(props) {
 
     const [Cost, setCost] = useState(0)
     const [PreCost, setPreCost] = useState(0)
+
+    const [Persons, setPersons] = useState([])
+    const [Contributions, setContributions] = useState([])
+
     const [TravelAccount, setTravelAccount] = useState(0)
     const [TravelAccount_Public, setTravelAccount_Public] = useState(0)
     const [OwnCash, setOwnCash] = useState(0)
@@ -109,6 +115,8 @@ function DetailPage(props) {
             .then(response => {
                 if (response.payload.success) {
                     setCost(response.payload.data.cost)
+                    setPersons(response.payload.data.persons)
+                    setContributions(response.payload.data.contributions)
                 } else {
                     return alert("Failed to bring up public")
                 }
@@ -154,7 +162,7 @@ function DetailPage(props) {
             localStorage.setItem('join', false)
         }
         else { initial() } // Generate 모드
-        props.history.push('/')
+        props.history.push('/edit')
     }
 
     const initial = () => { // Consumption과 Public 정보 생성하기 (Generate 모드)
@@ -176,9 +184,7 @@ function DetailPage(props) {
 
         dispatch(saveConsumption(con))
             .then(response => {
-                if (response.payload.success) {
-                    alert('Success!')
-                } else {
+                if (!response.payload.success) {
                     return alert("Failed to generate")
                 }
             })
@@ -188,14 +194,14 @@ function DetailPage(props) {
 
         let pub = { 
             travel_id: localStorage.getItem('travelId'),
-            cost: sum 
+            cost: sum,
+            persons: [localStorage.getItem('userId')],
+            contributions: [sum]
         }
 
         dispatch(savePublic(pub))
             .then(response => {
-                if (response.payload.success) {
-                    alert('Success!')
-                } else {
+                if (!response.payload.success) {
                     return alert("Failed to generate")
                 }
             })
@@ -225,13 +231,29 @@ function DetailPage(props) {
                 }
             })
 
-        let sum = (Cost - PreCost) 
+        let cost_ = (Cost - PreCost) 
                 + TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
                 + OwnCard_Public + ForeignCard_Public
         
+        var persons_ = Persons
+        var index = 0;
+        for(let i = 0; i < persons_.length; i++){
+            if(persons_[i] === localStorage.getItem('userId')) {
+                index = i;
+                break
+            }
+        }
+
+        let contribution = TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
+                        + OwnCard_Public + ForeignCard_Public
+        var contributions_ = Contributions
+        contributions_[index] = contribution
+        
         let pub = { 
             travel_id: localStorage.getItem('travelId'),
-            cost: sum 
+            cost: cost_,
+            persons: persons_,
+            contributions: contributions_
         }
 
         dispatch(updatePublic(pub))
@@ -266,12 +288,22 @@ function DetailPage(props) {
                 }
             })
 
-        let sum = Cost + TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
+        let cost_ = Cost + TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
                 + OwnCard_Public + ForeignCard_Public
+
+        var persons_ = Persons
+        persons_.push(localStorage.getItem('userId'))
+
+        let contribution = TravelAccount_Public + OwnCard_Public + ForeignCash_Public 
+                        + OwnCard_Public + ForeignCard_Public
+        var contributions_ = Contributions
+        contributions_.push(contribution)
 
         let pub = { 
             travel_id: localStorage.getItem('travelId'),
-            cost: sum 
+            cost: cost_,
+            persons: persons_,
+            contributions: contributions_
         }
 
         dispatch(updatePublic(pub))
@@ -287,10 +319,13 @@ function DetailPage(props) {
             textAlign: 'center',
             width: '100%', height: '80vh'
         }}> 
+        <div id="title">
+            {localStorage.getItem('travelId')}
+        </div>
             {/* 환율 적용 */}
             <div>
                 { Load && 
-                    <div style={{ height: 'auto' }}>
+                    <div style={{ margin: '0px', height: 'auto' }}>
                         <Search
                             style={{ width: '300px', margin: '10px', textAlign: 'right'}}
                             prefix="환율"
@@ -304,21 +339,20 @@ function DetailPage(props) {
             </div>
             {/* 안내문 */}
             <div style={{ 
-                margin: '5px auto', padding: '5px',
+                margin: '0px auto', padding: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#e6f7ff',
-                borderRadius: '0.2em', fontSize: '11px'
-            }}> 왼쪽: 개인 소비 내역 / 오른쪽: 공동 소비 내역
+                borderRadius: '0.2em', fontSize: '12px'
+            }}>왼쪽: 개인 소비 내역 / 오른쪽: 공동 소비 내역
             </div>
-
             {/* 경비 관리 */}
             <div style={{ 
-                margin: '10px auto', padding: '10px 0px',
+                margin: '10px auto', paddingTop: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#bae7ff',
                 borderRadius: '1em'
             }}>
-                공동 통장
+                <div class="font">공동 통장</div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
                     <Input 
                         size="small"
@@ -337,12 +371,12 @@ function DetailPage(props) {
                 </div>
             </div>
             <div style={{ 
-                margin: '10px auto', padding: '10px 0px',
+                margin: '10px auto', paddingTop: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#91d5ff',
                 borderRadius: '1em'
             }}>
-                현금
+                <div class="font">현금</div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
                     <Input 
                         size="small"
@@ -378,12 +412,12 @@ function DetailPage(props) {
                 </div>}
             </div>
             <div style={{ 
-                margin: '10px auto', padding: '10px 0px',
+                margin: '10px auto', paddingTop: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#bae7ff',
                 borderRadius: '1em'
             }}>
-                개인 카드/통장
+                <div class="font">개인 카드/통장</div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
                     <Input 
                         size="small"
@@ -420,13 +454,15 @@ function DetailPage(props) {
             </div>
             <div style={{ margin: '0px auto',  width: '300px' }}> {/* 내 소비 계산 */}
                 <Button 
+                    size="small"
                     type="primary" block 
-                    style={{ width: '40%', backgroundColor: "#40a9ff", borderColor: "#40a9ff" }}
+                    style={{ width: '30%', margin: '10px', backgroundColor: "#40a9ff", borderColor: "#40a9ff" }}
                     onClick={onCompute}
                 >
                 나의 소비
                 </Button>
                 <Input
+                    size="small"
                     style={{ width: '50%', margin: '10px'}}
                     readOnly={true}
                     suffix="원"
@@ -435,13 +471,15 @@ function DetailPage(props) {
             </div>
             <div style={{ margin: '0px auto', width: '300px' }}> {/* 공동 소비 계산 */}
                 <Button 
+                    size="small"
                     type="primary" block 
-                    style={{ width: '40%', backgroundColor: "#40a9ff", borderColor: "#40a9ff" }}
+                    style={{ width: '30%', margin: '10px', backgroundColor: "#40a9ff", borderColor: "#40a9ff" }}
                     onClick={onCompute_Public}
                 >
                 공동 소비
                 </Button>
                 <Input
+                    size="small"
                     style={{ width: '50%', margin: '10px'}}
                     readOnly={true}
                     suffix="원"
@@ -461,4 +499,4 @@ function DetailPage(props) {
     )
 }
 
-export default withRouter(DetailPage)
+export default withRouter(ExpensePage)

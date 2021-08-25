@@ -7,7 +7,9 @@ const publicSchema = mongoose.Schema({
     },
     cost: {
         type: Number
-    }
+    },
+    persons: [String],
+    contributions: [Number]
 })
 
 publicSchema.pre('save', function(next){

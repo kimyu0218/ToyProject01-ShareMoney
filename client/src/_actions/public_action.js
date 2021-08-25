@@ -2,7 +2,8 @@ import axios from 'axios';
 import {
     SAVE_PUBLIC,
     BRING_UP_PUBLIC,
-    UPDATE_PUBLIC
+    UPDATE_PUBLIC,
+    GET_PUBLIC_DETAIL
 } from './types';
 
 export function savePublic(dataToSubmit) {
@@ -31,6 +32,16 @@ export function updatePublic(dataToSubmit) {
 
     return {
         type: UPDATE_PUBLIC,
+        payload: request
+    }
+}
+
+export function getPublicDetail(dataToSubmit) {
+    const request = axios.post('/api/publics/detail', dataToSubmit)
+    .then(response => response.data)
+
+    return {
+        type: GET_PUBLIC_DETAIL,
         payload: request
     }
 }

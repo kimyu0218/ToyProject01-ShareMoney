@@ -36,3 +36,8 @@
     transform: rotate(360deg);
   }
 }
+
+@font-face {
+  font-family: "BlackHanSans";
+  src: url("./components/fonts/BlackHanSans-Regular.ttf") format("truetype");
+}

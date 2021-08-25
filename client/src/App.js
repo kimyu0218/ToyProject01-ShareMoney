@@ -7,14 +7,17 @@ import {
 
 import LoginPage from './components/views/LoginPage/LoginPage'
 import RegisterPage from './components/views/RegisterPage/RegisterPage'
-import DetailPage from './components/views/DetailPage/DetailPage'
+import ExpensePage from './components/views/ExpensePage/ExpensePage'
 import LandingPage from "./components/views/LandingPage/LandingPage"
 import GeneratePage from "./components/views/GeneratePage/GeneratePage"
 import JoinPage from "./components/views/JoinPage/JoinPage"
 import EditPage from "./components/views/EditPage/EditPage"
+import DetailPage from "./components/views/EditPage/Sections/DetailPage"
 import NavBar from "./components/views/NavBar/NavBar"
 import Footer from "./components/views/Footer/Footer"
 import Auth from './hoc/auth'
+
+import "./App.css";
 
 function App() {
   return (
@@ -25,7 +28,8 @@ function App() {
           <Route exact path="/" component={Auth(LandingPage, true)} />
           <Route exact path="/join" component={Auth(JoinPage, true)} />
           <Route exact path="/edit" component={Auth(EditPage, true)} />
-          <Route exact path="/detail" component={Auth(DetailPage, true)} />
+          <Route exact path="/detail/:travel_id" component={Auth(DetailPage, true)} />
+          <Route exact path="/Expense" component={Auth(ExpensePage, true)} />
           <Route exact path="/generate" component={Auth(GeneratePage, true)} />
           <Route exact path="/login" component = {Auth(LoginPage, false)} />
           <Route exact path="/register" component = {Auth(RegisterPage, false)} />

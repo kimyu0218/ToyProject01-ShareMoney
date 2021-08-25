@@ -1,7 +1,6 @@
 import React from 'react'
 
 import 'antd/dist/antd.css';
-import './LandingPage.css'
 
 function LandingPage() {
     return (
@@ -16,12 +15,20 @@ function LandingPage() {
                 width: '80%',
                 textAlign: 'center'
             }}>
-                <div style={{ margin: '10px' }}>
-                    <a href="/generate"> Generate a New Travel </a>
+                <div style={{ margin: '10px'}}>
+                    <a href="/generate">
+                        <p style={{ fontSize: '18px' }}>Generate a New Travel</p>
+                    </a>
                 </div>
                 or
                 <div style={{ margin: '10px' }}>
-                    <a href="/join"> Join </a> / <a href="/edit"> Edit </a>
+                    <a href="/join">
+                        <p style={{ fontSize: '18px', display: 'inline' }}>Join</p>
+                    </a>
+                    &nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+                    <a href="/edit">
+                        <p style={{ fontSize: '18px', display: 'inline' }}>Edit</p>
+                    </a>
                 </div>
             </div>
         </div>
