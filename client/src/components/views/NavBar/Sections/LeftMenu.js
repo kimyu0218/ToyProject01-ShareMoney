@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu } from 'antd';
+import { Menu, Badge } from 'antd';
 
 function LeftMenu(props) {
   return (
@@ -8,7 +8,9 @@ function LeftMenu(props) {
       <a href="/">Home</a>
     </Menu.Item>
     <Menu.Item key="otherPage">
-      <a href="/edit">My Travels</a>
+      <Badge count={localStorage.getItem('notComplete')}>
+        <a href="/edit">My Travels</a>
+      </Badge>
     </Menu.Item>
   </Menu>
   )

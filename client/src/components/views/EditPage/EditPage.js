@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from "react-redux";
 import { findTravel, deleteTravel } from '../../../_actions/travel_action';
+import { getPublicDetail } from '../../../_actions/public_action';
 
-import { Card, Col, Row, Tag } from 'antd';
+import { Card, Col, Row, Tag, Badge } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import './EditPage.css'
@@ -12,10 +13,12 @@ function EditPage(props) {
     const dispatch = useDispatch()
 
     const [MyTravels, setMyTravels] = useState([])
+    const [NotComplete, setNotComplete] = useState([])
     const [Load, setLoad] = useState(false)
 
     useEffect(() => {
         loadTravels()
+        setLoad(true)
     }, [])
 
     const loadTravels = () => {
@@ -26,11 +29,40 @@ function EditPage(props) {
             .then(response => {
                 if (response.payload.success) {
                     setMyTravels(response.payload.travels)
-                    setLoad(true)
+                    findNotComplete(response.payload.travels)
                 } else {
                     return alert("Falied to load")
                 }
             })
+    }
+
+    const findNotComplete = (travels) => { // 완료되지 않은 작업 개수 구하기
+
+        for(let i = 0; i < travels.length; i++) {
+            let personnel = travels[i].personnel
+
+            if(personnel !== travels[i].persons.length) { 
+                setNotComplete(NotComplete => [...NotComplete, travels[i]]) 
+            }
+            else {
+                let body = { travel_id: travels[i].travel_id }
+                
+                dispatch(getPublicDetail(body))
+                    .then(response => {
+                        if (response.payload.success) {
+                            let avg = response.payload.data.cost / personnel
+                            
+                            for(let j = 0; j < personnel; j++) {
+                                if(response.payload.data.contributions[j] !== avg) {
+                                    setNotComplete(NotComplete => [...NotComplete, travels[i]])
+                                    break
+                                }
+                            }
+                        } 
+                        else return alert("Falied to load")
+                    })
+            }
+        }
     }
 
     const Edit = (travelId) => {
@@ -74,6 +106,16 @@ function EditPage(props) {
         })
 
         return travels.map((travel) => {
+
+            let flag = false
+
+            for(let i = 0; i < localStorage.getItem('notComplete'); i++) {
+                if(travel === NotComplete[i]) {
+                    flag = true
+                    break
+                }
+            }
+
             return (
                 <Col span={12}>
                     <Card 
@@ -89,8 +131,9 @@ function EditPage(props) {
                             <DeleteOutlined key="delete" onClick={() => Delete(travel._id, travel.persons)}/>,
                         ]}
                     >   
-                        <div style={{ color: 'gray', textAlign: 'right', fontSize: '12px' }}>
+                        <div style={{ color: 'gray', textAlign: 'right', fontSize: '11.5px' }}>
                             {travel.date[0]}&nbsp;~&nbsp;{travel.date[1]}
+                            &nbsp;{flag && <Badge status="processing" />}
                         </div>
                         <Tag color="geekblue">{travel.destination}</Tag>
                         <Tag color="orange">{travel.personnel}명</Tag>
@@ -105,7 +148,7 @@ function EditPage(props) {
     return (
         <div style={{
             textAlign: 'center', margin: '0 auto', paddingTop: '20px', 
-            width: '90%', height: '80vh', overflow: 'auto'
+            width: '95%', height: '80vh', overflow: 'auto'
         }}> 
             <div id="title">
                 나의 여행

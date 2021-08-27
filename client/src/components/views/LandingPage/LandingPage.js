@@ -61,6 +61,7 @@ function LandingPage() {
 
     const alertNotComplete = (count) => { // 완료되지 않은 작업이 있는 경우 알림
         if(count !== 0) {
+            localStorage.setItem("notComplete", count)
             return (
                 <Alert
                     message="Travel information"
