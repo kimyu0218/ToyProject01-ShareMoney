@@ -56,6 +56,7 @@ function DetailPage(props) {
                     <Statistic
                             title={`${companion}`}
                             value={Contributions[index]-Cost/Personnel}
+                            precision={0}
                             valueStyle={{ color: '#3f8600', fontSize: '1.2rem' }}
                             prefix={<UpOutlined />}
                             suffix="원 미수령"
@@ -73,6 +74,7 @@ function DetailPage(props) {
                     <Statistic
                             title={`${companion}`}
                             value={0}
+                            precision={0}
                             valueStyle={{ color: '#1890ff', fontSize: '1.2rem' }}
                             prefix={<MinusOutlined />}
                             suffix="원"
@@ -90,6 +92,7 @@ function DetailPage(props) {
                     <Statistic
                             title={`${companion}`}
                             value={Cost/Personnel-Contributions[index]}
+                            precision={0}
                             valueStyle={{ color: '#cf1322', fontSize: '1.2rem' }}
                             prefix={<DownOutlined />}
                             suffix="원 미납"

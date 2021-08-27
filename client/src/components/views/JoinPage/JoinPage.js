@@ -24,7 +24,7 @@ function JoinPage(props) {
                     var persons_ = response.payload.data.persons
                     for(let i = 0; i < persons_.length; i++){
                         if(persons_[i] === localStorage.getItem('userId')) {
-                            alert('이미 추가한 아이디입니다. Edit 페이지로 이동합니다.')
+                            alert('이미 추가한 아이디입니다. MyTravels 페이지로 이동합니다.')
                             props.history.push('/edit')
                         }
                     }
