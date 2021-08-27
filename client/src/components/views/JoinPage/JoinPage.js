@@ -49,6 +49,7 @@ function JoinPage(props) {
         dispatch(editPersons(body))
             .then(response => {
                 if (response.payload.success) {
+                    localStorage.setItem('travelId', TravelId)
                     localStorage.setItem('join', true)
                     props.history.push('/expense')
                 } else {

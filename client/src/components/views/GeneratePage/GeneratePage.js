@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from "react-redux";
 import { generateTravel, checkDuplicateTravelId } from '../../../_actions/travel_action';
 
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, DatePicker } from 'antd';
 import 'antd/dist/antd.css';
 
 function GeneratePage(props) {
@@ -12,10 +12,12 @@ function GeneratePage(props) {
     const [Destination, setDestination] = useState("");
     const [TravelId, setTravelId] = useState("");
     const [Personnel, setPersonnel] = useState();
+    const [Date, setDate] = useState([]);
 
     const onDestinationHandler = (event) => { setDestination(event.currentTarget.value); }
     const onTravelIdHandler = (event) => { setTravelId(event.currentTarget.value); }
     const onPersonelHandler= (event) => { setPersonnel(Number(event.currentTarget.value)); }
+    const onDateHandler = (date, dateString) => { setDate(dateString); }
 
     const countries = [
         "아랍에미리트", "호주", "바레인", "브루나이", "캐나다", "스위스",
@@ -47,7 +49,8 @@ function GeneratePage(props) {
             destination: Destination,
             travel_id: TravelId,
             personnel: Personnel,
-            persons: [localStorage.getItem('userId')]
+            persons: [localStorage.getItem('userId')],
+            date: Date
         }
 
         dispatch(generateTravel(body))
@@ -82,7 +85,7 @@ function GeneratePage(props) {
     return (
         <div style={{
             display: 'flex', justifyContent: 'center', alignItems: 'center',
-            width: '100%', height: '100vh'
+            width: '100%', height: '80vh'
         }}>
             <Form
                 {...formItemLayout}
@@ -127,6 +130,19 @@ function GeneratePage(props) {
                     ]}
                 >
                     <Input value={Personnel} onChange={onPersonelHandler}/>
+                </Form.Item>
+
+                <Form.Item
+                    name="Itinerary"
+                    label="Itinerary"
+                    rules={[
+                    {
+                        required: true,
+                        message: 'Please input Itinerary!',
+                    },
+                    ]}
+                >
+                    <DatePicker.RangePicker value={Date} onChange={onDateHandler}/>
                 </Form.Item>
 
                 <Form.Item {...tailFormItemLayout}>

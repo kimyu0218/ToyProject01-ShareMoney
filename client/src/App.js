@@ -13,6 +13,7 @@ import GeneratePage from "./components/views/GeneratePage/GeneratePage"
 import JoinPage from "./components/views/JoinPage/JoinPage"
 import EditPage from "./components/views/EditPage/EditPage"
 import DetailPage from "./components/views/EditPage/Sections/DetailPage"
+//import DetailPage_Map_ver from './/components/views/EditPage/Sections/DetailPage_Map_ver'
 import SuccessGenerate from "./components/views/SuccessPage/SuccessGenerate"
 import SuccessJoin from "./components/views/SuccessPage/SuccessJoin"
 import SuccessEdit from "./components/views/SuccessPage/SuccessEdit"

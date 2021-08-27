@@ -5,7 +5,9 @@ import Axios from 'axios';
 import { saveConsumption, bringupConsumption, updateConsumption } from '../../../_actions/consumption_action'
 import { savePublic, bringupPublic, updatePublic } from '../../../_actions/public_action'
 
-import { Input, Button } from 'antd'
+import { Input, Button, InputNumber, Popover } from 'antd'
+import { QuestionCircleOutlined } from '@ant-design/icons'
+
 import { API_URL, API_KEY, PROXY_SERVER } from './Sections/currency_api'
 
 import './ExpensePage.css'
@@ -60,6 +62,7 @@ function ExpensePage(props) {
         Axios.get(endpoint, {})
             .then(response => {
                 if(response.data === null) return;
+                console.log(response)
                 setResult(response.data)
                 setLoad(true);
             })
@@ -137,16 +140,28 @@ function ExpensePage(props) {
     
     // 내 소비 내역 계산하기
     const onCompute = () => {
-        var currency = Currency.replace(',','')
-        var sum = TravelAccount + (OwnCash+OwnCard) + (ForeignCard+ForeignCash) * parseFloat(currency)
-        setMyConsumption(sum)
+        if(Currency === 0) {
+            let sum = TravelAccount + (OwnCash+OwnCard)
+            setMyConsumption(sum)
+        }
+        else {
+            var currency = Currency.replace(',','')
+            let sum = TravelAccount + (OwnCash+OwnCard) + (ForeignCard+ForeignCash) * parseFloat(currency)
+            setMyConsumption(sum)
+        }
     }
 
     // 공동 소비 내역 계산하기
     const onCompute_Public = () => {
-        var currency = Currency.replace(',','')
-        var sum = TravelAccount_Public + (OwnCash_Public+OwnCard_Public) + (ForeignCard_Public+ForeignCash_Public) * parseFloat(currency)
-        setPublicConsumption(sum)
+        if(Currency === 0) {
+            let sum = TravelAccount_Public + (OwnCash_Public+OwnCard_Public)
+            setPublicConsumption(sum)
+        }
+        else {
+            var currency = Currency.replace(',','')
+            let sum = TravelAccount_Public + (OwnCash_Public+OwnCard_Public) + (ForeignCard_Public+ForeignCash_Public) * parseFloat(currency)
+            setPublicConsumption(sum)
+        }
     }
 
     // 소비 내역 DB에 저장하기
@@ -320,7 +335,7 @@ function ExpensePage(props) {
 
     return (
         <div style={{
-            textAlign: 'center',
+            textAlign: 'center', margin: '0 auto', paddingTop: '20px', 
             width: '100%', height: '80vh'
         }}> 
         <div id="title">
@@ -354,9 +369,18 @@ function ExpensePage(props) {
                 margin: '10px auto', paddingTop: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#bae7ff',
-                borderRadius: '1em'
+                borderRadius: '0.5em'
             }}>
-                <div class="font">공동 통장</div>
+                <div class="font">
+                    공동 통장&nbsp;&nbsp; 
+                    <Popover 
+                        content=" 공동 소비 내역을 입력하실 때 
+                            공동 통장에 넣은 금액에서 개인 소비 내역을 뺀 값을 입력하세요."
+                        arrowPointAtCenter
+                    >
+                        <QuestionCircleOutlined />
+                    </Popover>
+                </div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
                     <Input 
                         size="small"
@@ -378,7 +402,7 @@ function ExpensePage(props) {
                 margin: '10px auto', paddingTop: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#91d5ff',
-                borderRadius: '1em'
+                borderRadius: '0.5em'
             }}>
                 <div class="font">현금</div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
@@ -419,7 +443,7 @@ function ExpensePage(props) {
                 margin: '10px auto', paddingTop: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#bae7ff',
-                borderRadius: '1em'
+                borderRadius: '0.5em'
             }}>
                 <div class="font">개인 카드/통장</div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
@@ -465,11 +489,11 @@ function ExpensePage(props) {
                 >
                 나의 소비
                 </Button>
-                <Input
+                <InputNumber
                     size="small"
-                    style={{ width: '50%', margin: '10px'}}
+                    formatter={value => `${value}원`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    style={{ width: '50%', margin: '10px' }}
                     readOnly={true}
-                    suffix="원"
                     value={MyConsumption}
                 />
             </div>
@@ -482,11 +506,11 @@ function ExpensePage(props) {
                 >
                 공동 소비
                 </Button>
-                <Input
+                <InputNumber
                     size="small"
-                    style={{ width: '50%', margin: '10px'}}
+                    formatter={value => `${value}원`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    style={{ width: '50%', margin: '10px' }}
                     readOnly={true}
-                    suffix="원"
                     value={PublicConsumption}
                 />
             </div>

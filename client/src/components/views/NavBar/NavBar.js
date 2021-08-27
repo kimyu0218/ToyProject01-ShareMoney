@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import LeftMenu from './Sections/LeftMenu';
 import RightMenu from './Sections/RightMenu';
+
 import { Drawer, Button } from 'antd';
 import { AlignRightOutlined } from '@ant-design/icons';
 
@@ -33,7 +34,7 @@ function NavBar() {
           <AlignRightOutlined />
         </Button>
         <Drawer
-          title="Basic Drawer"
+          title={`Hello ${localStorage.getItem('userId')}`}
           placement="right"
           className="menu_drawer"
           closable={false}

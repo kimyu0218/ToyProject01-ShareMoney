@@ -12,7 +12,8 @@ const travelSchema = mongoose.Schema({
     personnel: {
         type: Number
     },
-    persons: [String]
+    persons: [String],
+    date: [String]
 })
 
 travelSchema.pre('save', function(next){

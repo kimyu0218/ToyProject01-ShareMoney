@@ -1,8 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import 'antd/dist/antd.css';
 
 function LandingPage() {
+
+    useEffect(() => {
+        localStorage.setItem('edit', false)
+        localStorage.setItem('join', false)
+    }, [])
+
     return (
         <div style={{
             display: 'flex', justifyContent: 'center', alignItems: 'center',
