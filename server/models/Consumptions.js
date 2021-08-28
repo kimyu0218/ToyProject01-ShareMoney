@@ -7,10 +7,16 @@ const consumptionSchema = mongoose.Schema({
     travel_id: {
         type: String
     },
-    travel_account: {
+    own_travel_account: {
         type: Number
     },
-    travel_account_pub: {
+    own_travel_account_pub: {
+        type: Number
+    },
+    foreign_travel_account: {
+        type: Number
+    },
+    foreign_travel_account_pub: {
         type: Number
     },
     own_cash: {

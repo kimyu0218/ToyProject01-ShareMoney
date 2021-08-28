@@ -6,7 +6,6 @@ import { getPublicDetail } from '../../../_actions/public_action';
 import { Card, Col, Row, Tag, Badge } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
-import './EditPage.css'
 
 function EditPage(props) {
 
@@ -21,9 +20,9 @@ function EditPage(props) {
         setLoad(true)
     }, [])
 
-    const loadTravels = () => {
+    const loadTravels = () => { // 사용자 여행 정보 가져오기
 
-        let body = { user_id: localStorage.getItem('userId') }
+        let body = { user_id: sessionStorage.getItem('userId') }
 
         dispatch(findTravel(body))
             .then(response => {
@@ -38,13 +37,13 @@ function EditPage(props) {
 
     const findNotComplete = (travels) => { // 완료되지 않은 작업 개수 구하기
 
-        for(let i = 0; i < travels.length; i++) {
-            let personnel = travels[i].personnel
+        for(let i = 0; i < travels.length; i++) { 
 
-            if(personnel !== travels[i].persons.length) { 
+            let personnel = travels[i].personnel
+            if(personnel !== travels[i].persons.length) { // 인원이 모자란 경우
                 setNotComplete(NotComplete => [...NotComplete, travels[i]]) 
             }
-            else {
+            else { // 더치페이가 이루어지지 않은 경우
                 let body = { travel_id: travels[i].travel_id }
                 
                 dispatch(getPublicDetail(body))
@@ -65,16 +64,14 @@ function EditPage(props) {
         }
     }
 
-    const Edit = (travelId, country) => {
-        localStorage.setItem('edit', true)
-        localStorage.setItem('country', country)
-        localStorage.setItem('travelId', travelId)
-        props.history.push('/expense')
+    const Edit = (travelId, unit) => { // 편집 버튼 클릭 -> 여행 경비 수정
+        sessionStorage.setItem('edit', true)
+        props.history.push(`/expense/${travelId}/${unit}`)
     }
 
-    const Delete = (id, persons_) => {
+    const Delete = (id, persons_) => { // 삭제 버튼 클릭 -> 여행 탈퇴
 
-        let index = persons_.indexOf(localStorage.getItem('userId'))
+        let index = persons_.indexOf(sessionStorage.getItem('userId'))
         persons_.splice(index, 1)
 
         let body = { 
@@ -92,7 +89,7 @@ function EditPage(props) {
             })
     }
 
-    const printCompanions = (persons) => {
+    const printCompanions = (persons) => { // 여행 동료 출력
         return (
             persons.map((person) => {
                 return ( <Tag color="green"> {person} </Tag> )
@@ -100,18 +97,17 @@ function EditPage(props) {
         )
     }
 
-    const renderTravels = (travels) => {
+    const renderTravels = (travels) => { // 사용자 여행 정보 출력하기
 
-        travels.sort(function(a, b) {
+        travels.sort(function(a, b) { // 최신순으로 정렬
             return a.date[1] > b.date[1] ? -1 : a.date[1] < b.date[1] ? 1 : 0
         })
 
         return travels.map((travel) => {
 
             let flag = false
-
-            for(let i = 0; i < localStorage.getItem('notComplete'); i++) {
-                if(travel === NotComplete[i]) {
+            for(let i = 0; i < sessionStorage.getItem('notComplete'); i++) {
+                if(travel === NotComplete[i]) { 
                     flag = true
                     break
                 }
@@ -123,18 +119,18 @@ function EditPage(props) {
                         title={`${travel.travel_id}`}
                         hoverable
                         bordered={false}
-                        extra={<a href={`/detail/${travel.travel_id}`}>More</a>}
+                        extra={<a href={`/detail/${travel.travel_id}/${travel.currency_unit}`}>More</a>}
                         headStyle={{ fontWeight: 'bold', backgroundColor: '#fafafa' }}
                         size="small"
                         style={{ textAlign: 'left', lineHeight: '200%' }}
                         actions={[
-                            <EditOutlined key="edit" onClick={() => Edit(travel.travel_id, travel.destination)} />,
+                            <EditOutlined key="edit" onClick={() => Edit(travel.travel_id, travel.currency_unit)} />,
                             <DeleteOutlined key="delete" onClick={() => Delete(travel._id, travel.persons)}/>,
                         ]}
                     >   
                         <div style={{ color: 'gray', textAlign: 'right', fontSize: '11.5px' }}>
-                            {travel.date[0]}&nbsp;~&nbsp;{travel.date[1]}
-                            &nbsp;{flag && <Badge status="processing" />}
+                            {travel.date[0]}&nbsp;~&nbsp;{travel.date[1]}&nbsp;
+                            {/* 완료되지 않은 작업 표시 */}{flag && <Badge status="processing" />}
                         </div>
                         <Tag color="geekblue">{travel.destination}</Tag>
                         <Tag color="orange">{travel.personnel}명</Tag>
@@ -151,9 +147,7 @@ function EditPage(props) {
             textAlign: 'center', margin: '0 auto', paddingTop: '20px', 
             width: '95%', height: '80vh', overflow: 'auto'
         }}> 
-            <div id="title">
-                나의 여행
-            </div>
+            <div style={{ fontFamily: 'BlackHanSans', fontSize: '24px' }}>My Travels</div>
             <div className="site-card-wrapper" style={{ marginTop: '20px'}}>
                 <Row gutter={[0, 16]}>
                     {Load && renderTravels(MyTravels)}

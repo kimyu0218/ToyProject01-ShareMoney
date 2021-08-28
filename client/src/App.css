@@ -41,3 +41,8 @@
   font-family: "BlackHanSans";
   src: url("./components/fonts/BlackHanSans-Regular.ttf") format("truetype");
 }
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./components/fonts/Montserrat-Medium.ttf") format("truetype");
+}

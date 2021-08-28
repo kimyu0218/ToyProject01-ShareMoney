@@ -34,7 +34,7 @@ function NavBar() {
           <AlignRightOutlined />
         </Button>
         <Drawer
-          title={`Hello ${localStorage.getItem('userId')}`}
+          title={`Hello ${sessionStorage.getItem('userId')}`}
           placement="right"
           className="menu_drawer"
           closable={false}

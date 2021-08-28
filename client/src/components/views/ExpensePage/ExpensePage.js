@@ -1,28 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from "react-redux";
 import { withRouter } from "react-router-dom"
-import Axios from 'axios';
 import { saveConsumption, bringupConsumption, updateConsumption } from '../../../_actions/consumption_action'
 import { savePublic, bringupPublic, updatePublic } from '../../../_actions/public_action'
 
 import { Input, Button, InputNumber, Popover } from 'antd'
-import { QuestionCircleOutlined } from '@ant-design/icons'
+import { QuestionCircleOutlined, DollarCircleOutlined } from '@ant-design/icons'
 
-import { API_URL, API_KEY, PROXY_SERVER } from './Sections/currency_api'
-
-import './ExpensePage.css'
+import { API_URL, API_KEY } from './Sections/currency_api'
 
 function ExpensePage(props) {
 
     const dispatch = useDispatch();
 
-    const Join = localStorage.getItem('join')
-    const Edit = localStorage.getItem('edit')
+    const Join = sessionStorage.getItem('join')
+    const Edit = sessionStorage.getItem('edit')
 
-    const Country = localStorage.getItem('country')
-    const [Currency, setCurrency] = useState(0)     // 환율
-    const [Result, setResult] = useState([])        // 환율 배열
-    const [Load, setLoad] = useState(false)
+    const [Currency, setCurrency] = useState(0)
     const [LoadUnit, setLoadUnit] = useState(false)
     const [CurrencyUnit, setCurrencyUnit] = useState("")
 
@@ -32,8 +26,10 @@ function ExpensePage(props) {
     const [Persons, setPersons] = useState([])
     const [Contributions, setContributions] = useState([])
 
-    const [TravelAccount, setTravelAccount] = useState(0)
-    const [TravelAccount_Public, setTravelAccount_Public] = useState(0)
+    const [OwnTravelAccount, setOwnTravelAccount] = useState(0)
+    const [OwnTravelAccount_Public, setOwnTravelAccount_Public] = useState(0)
+    const [ForeignTravelAccount, setForeignTravelAccount] = useState(0)
+    const [ForeignTravelAccount_Public, setForeignTravelAccount_Public] = useState(0)
     const [OwnCash, setOwnCash] = useState(0)
     const [OwnCash_Public, setOwnCash_Public] = useState(0)
     const [ForeignCash, setForeignCash] = useState(0)
@@ -45,9 +41,10 @@ function ExpensePage(props) {
     const [MyConsumption, setMyConsumption] = useState(0)
     const [PublicConsumption, setPublicConsumption] = useState(0)
 
-    const { Search } = Input;
-    const onTravelAccountHandler = (event) => { setTravelAccount(Number(event.currentTarget.value)); }
-    const onTravelAccountHandler_Public = (event) => { setTravelAccount_Public(Number(event.currentTarget.value)); }
+    const onOwnTravelAccountHandler = (event) => { setOwnTravelAccount(Number(event.currentTarget.value)); }
+    const onOwnTravelAccountHandler_Public = (event) => { setOwnTravelAccount_Public(Number(event.currentTarget.value)); }
+    const onForeignTravelAccountHandler = (event) => { setForeignTravelAccount(Number(event.currentTarget.value)); }
+    const onForeignTravelAccountHandler_Public = (event) => { setForeignTravelAccount_Public(Number(event.currentTarget.value)); }
     const onOwnCashHandler = (event) => { setOwnCash(Number(event.currentTarget.value)); }
     const onOwnCashHandler_Public = (event) => { setOwnCash_Public(Number(event.currentTarget.value)); }
     const onForeignCashHandler = (event) => { setForeignCash(Number(event.currentTarget.value)); }
@@ -57,32 +54,7 @@ function ExpensePage(props) {
     const onForeignCardHandler = (event) => { setForeignCard(Number(event.currentTarget.value)); }
     const onForeignCardHandler_Public = (event) => { setForeignCard_Public(Number(event.currentTarget.value)); }
 
-    // 환율 받아오기
-    const getCurrency = (endpoint) => {
-        Axios.get(endpoint, {})
-            .then(response => {
-                if(response.data === null) return;
-                console.log(response)
-                setResult(response.data)
-                setLoad(true);
-            })
-    }
-
-    // 해당 국가 환율 설정하기
-    const exist = (country) => {
-        let tmp = country.cur_nm.split(" ")
-        if(tmp[0] === Country) return true
-    }
-    const onSearch = (result) => {
-        let find = result.find(exist)
-        setCurrency(find.tts)
-        setCurrencyUnit(find.cur_unit)
-        setLoadUnit(true)
-    }
-
     useEffect( () => {
-        const endpoint = `${PROXY_SERVER}${API_URL}?authkey=${API_KEY}&data=AP01`
-        getCurrency(endpoint)
 
         if(Edit === "true") { // Edit 모드
             bringCon()
@@ -91,20 +63,32 @@ function ExpensePage(props) {
         else if(Join === "true") { // Join 모드
             bringPub()
         }
+        
+        setCurrencyUnit(props.match.params.currency_code) // 환율 코드 설정하기
+        setLoadUnit(true)
+
+        fetch(`${API_URL}/${API_KEY}/latest/${props.match.params.currency_code}`) // 환율 받아오기
+            .then(response => response.json())
+            .then(response => {
+                setCurrency(response.conversion_rates["KRW"])
+            })
+
     }, []);
 
     const bringCon = () => { // Consumption 정보 가져오기 (Edit 모드)
 
         let con = {
-            user_id: localStorage.getItem('userId'),
-            travel_id: localStorage.getItem('travelId')
+            user_id: sessionStorage.getItem('userId'),
+            travel_id: props.match.params.travel_id
         }
         
-        dispatch(bringupConsumption(con))
+        dispatch(bringupConsumption(con)) // 개인 소비 내역 가져오기
             .then(response => {
                 if (response.payload.success) {
-                    setTravelAccount(response.payload.data.travel_account)
-                    setTravelAccount_Public(response.payload.data.travel_account_pub)
+                    setOwnTravelAccount(response.payload.data.own_travel_account)
+                    setOwnTravelAccount_Public(response.payload.data.own_travel_account_pub)
+                    setForeignTravelAccount(response.payload.data.foreign_travel_account)
+                    setForeignTravelAccount_Public(response.payload.data.foreign_travel_account_pub)
                     setOwnCash(response.payload.data.own_cash)
                     setOwnCash_Public(response.payload.data.own_cash_pub)
                     setForeignCash(response.payload.data.foreign_cash)
@@ -113,19 +97,20 @@ function ExpensePage(props) {
                     setOwnCard_Public(response.payload.data.own_card_pub)
                     setForeignCard(response.payload.data.foreign_card)
                     setForeignCard_Public(response.payload.data.foreign_card_pub)
-                    setPreCost(response.payload.data.travel_account_pub
-                        +response.payload.data.own_cash_pub+response.payload.data.foreign_cash_pub
-                        +response.payload.data.own_card_pub+response.payload.data.foreign_card_pub)
+                    setPreCost(response.payload.data.own_travel_account_pub+response.payload.data.foreign_travel_account_pub
+                            +response.payload.data.own_cash_pub+response.payload.data.foreign_cash_pub
+                            +response.payload.data.own_card_pub+response.payload.data.foreign_card_pub)
                 } else {
                     return alert("Failed to bring up my consumption")
                 }
             })
     }
+
     const bringPub = () => { // Public 정보 가져오기 (Edit 모드, Join 모드)
 
-        let pub = { travel_id: localStorage.getItem('travelId') }
+        let pub = { travel_id: props.match.params.travel_id }
         
-        dispatch(bringupPublic(pub))
+        dispatch(bringupPublic(pub)) // 공동 소비 내역 가져오기
             .then(response => {
                 if (response.payload.success) {
                     setCost(response.payload.data.cost)
@@ -137,31 +122,21 @@ function ExpensePage(props) {
             })
     }
 
-    
     // 내 소비 내역 계산하기
     const onCompute = () => {
-        if(Currency === 0) {
-            let sum = TravelAccount + (OwnCash+OwnCard)
-            setMyConsumption(sum)
-        }
-        else {
-            var currency = Currency.replace(',','')
-            let sum = TravelAccount + (OwnCash+OwnCard) + (ForeignCard+ForeignCash) * parseFloat(currency)
-            setMyConsumption(sum)
-        }
+        let sum = OwnTravelAccount + ForeignTravelAccount * Currency
+                + (OwnCash+OwnCard) 
+                + (ForeignCard+ForeignCash) * Currency
+        setMyConsumption(Math.round(sum))
     }
 
     // 공동 소비 내역 계산하기
     const onCompute_Public = () => {
-        if(Currency === 0) {
-            let sum = TravelAccount_Public + (OwnCash_Public+OwnCard_Public)
-            setPublicConsumption(sum)
-        }
-        else {
-            var currency = Currency.replace(',','')
-            let sum = TravelAccount_Public + (OwnCash_Public+OwnCard_Public) + (ForeignCard_Public+ForeignCash_Public) * parseFloat(currency)
-            setPublicConsumption(sum)
-        }
+        let sum = (OwnTravelAccount_Public-OwnTravelAccount)
+                 + (ForeignTravelAccount_Public-ForeignTravelAccount) * Currency
+                + (OwnCash_Public+OwnCard_Public) 
+                + (ForeignCard_Public+ForeignCash_Public) * Currency
+        setPublicConsumption(Math.round(sum))
     }
 
     // 소비 내역 DB에 저장하기
@@ -170,29 +145,31 @@ function ExpensePage(props) {
 
         if(Edit === "true") { // Edit 모드
             updateEdit()
-            localStorage.setItem('edit', false)
-            props.history.push('/edit/success')
+            sessionStorage.setItem('edit', false)
+            props.history.push(`/edit/success/${props.match.params.travel_id}`)
         }
         else if(Join === "true") { // Join 모드
             updateJoin()
-            localStorage.setItem('join', false)
-            props.history.push('/join/success')
+            sessionStorage.setItem('join', false)
+            props.history.push(`/join/success/${props.match.params.travel_id}`)
         }
         else {  // Generate 모드
             initial()
-            props.history.push('/generate/success')
+            props.history.push(`/generate/success/${props.match.params.travel_id}`)
         } 
     }
 
     const initial = () => { // Consumption과 Public 정보 생성하기 (Generate 모드)
 
         let con = { 
-            user_id: localStorage.getItem('userId'),
-            travel_id: localStorage.getItem('travelId'),
-            travel_account: TravelAccount,
-            travel_account_pub: TravelAccount_Public,
+            user_id: sessionStorage.getItem('userId'),
+            travel_id: props.match.params.travel_id,
+            own_travel_account: OwnTravelAccount,
+            own_travel_account_pub: OwnTravelAccount_Public,
+            foreign_travel_account: ForeignTravelAccount,
+            foreign_travel_account_pub: ForeignTravelAccount_Public,
             own_cash: OwnCash,
-            own_cash_pub: OwnCard_Public,
+            own_cash_pub: OwnCash_Public,
             foreign_cash: ForeignCash,
             foreign_cash_pub: ForeignCash_Public,
             own_card: OwnCard,
@@ -201,25 +178,27 @@ function ExpensePage(props) {
             foreign_card_pub: ForeignCard_Public
         }
 
-        dispatch(saveConsumption(con))
+        dispatch(saveConsumption(con)) // 개인 소비 내역 저장하기
             .then(response => {
                 if (!response.payload.success) {
                     return alert("Failed to generate")
                 }
             })
-
-        let sum = (TravelAccount_Public - TravelAccount) 
-                + OwnCash_Public + ForeignCash_Public 
-                + OwnCard_Public + ForeignCard_Public
+        
+        // 공동 소비 내역 계산하기
+        let sum = (OwnTravelAccount_Public-OwnTravelAccount) 
+                + (ForeignTravelAccount_Public-ForeignTravelAccount) * Currency
+                + OwnCash_Public + ForeignCash_Public * Currency
+                + OwnCard_Public + ForeignCard_Public * Currency
 
         let pub = { 
-            travel_id: localStorage.getItem('travelId'),
+            travel_id: props.match.params.travel_id,
             cost: sum,
-            persons: [localStorage.getItem('userId')],
+            persons: [sessionStorage.getItem('userId')],
             contributions: [sum]
         }
 
-        dispatch(savePublic(pub))
+        dispatch(savePublic(pub)) // 공동 소비 내역 저장하기
             .then(response => {
                 if (!response.payload.success) {
                     return alert("Failed to generate")
@@ -230,12 +209,14 @@ function ExpensePage(props) {
     const updateEdit = () => { // Consumption과 Public 모두 갱신하기 (Edit 모드)
 
         let con = { 
-            user_id: localStorage.getItem('userId'),
-            travel_id: localStorage.getItem('travelId'),
-            travel_account: TravelAccount,
-            travel_account_pub: TravelAccount_Public,
+            user_id: sessionStorage.getItem('userId'),
+            travel_id: props.match.params.travel_id,
+            own_travel_account: OwnTravelAccount,
+            own_travel_account_pub: OwnTravelAccount_Public,
+            foreign_travel_account: ForeignTravelAccount,
+            foreign_travel_account_pub: ForeignTravelAccount_Public,
             own_cash: OwnCash,
-            own_cash_pub: OwnCard_Public,
+            own_cash_pub: OwnCash_Public,
             foreign_cash: ForeignCash,
             foreign_cash_pub: ForeignCash_Public,
             own_card: OwnCard,
@@ -250,35 +231,39 @@ function ExpensePage(props) {
                     return alert("Failed to edit")
                 }
             })
-
+        
+        // 공동 소비 내역 계산하기
         let cost_ = (Cost - PreCost) 
-                + (TravelAccount_Public - TravelAccount) 
-                + OwnCash_Public + ForeignCash_Public 
-                + OwnCard_Public + ForeignCard_Public
+                + (OwnTravelAccount_Public-OwnTravelAccount) 
+                + (ForeignTravelAccount_Public-ForeignTravelAccount) * Currency
+                + OwnCash_Public + ForeignCash_Public * Currency
+                + OwnCard_Public + ForeignCard_Public * Currency
         
         var persons_ = Persons
         var index = 0;
-        for(let i = 0; i < persons_.length; i++){
-            if(persons_[i] === localStorage.getItem('userId')) {
+        for(let i = 0; i < persons_.length; i++) {
+            if(persons_[i] === sessionStorage.getItem('userId')) {
                 index = i;
                 break
             }
         }
 
-        let contribution = (TravelAccount_Public - TravelAccount) 
-                        + OwnCash_Public + ForeignCash_Public 
-                        + OwnCard_Public + ForeignCard_Public
+        // 사용자 기여도 계산하기
+        let contribution = (OwnTravelAccount_Public - OwnTravelAccount)
+                        + (ForeignTravelAccount_Public-ForeignTravelAccount) * Currency
+                        + OwnCash_Public + ForeignCash_Public * Currency
+                        + OwnCard_Public + ForeignCard_Public * Currency
         var contributions_ = Contributions
-        contributions_[index] = contribution
+        contributions_[index] = contribution // 해당 사용자 기여도 수정하기
         
         let pub = { 
-            travel_id: localStorage.getItem('travelId'),
+            travel_id: props.match.params.travel_id,
             cost: cost_,
             persons: persons_,
             contributions: contributions_
         }
 
-        dispatch(updatePublic(pub))
+        dispatch(updatePublic(pub)) // 공동 소비 내역 수정하기
             .then(response => {
                 if (!response.payload.success) {
                     return alert("Failed to edit")
@@ -289,12 +274,14 @@ function ExpensePage(props) {
     const updateJoin = () => { // Consumption 생성 & Public 갱신하기 (Join 모드)
 
         let con = { 
-            user_id: localStorage.getItem('userId'),
-            travel_id: localStorage.getItem('travelId'),
-            travel_account: TravelAccount,
-            travel_account_pub: TravelAccount_Public,
+            user_id: sessionStorage.getItem('userId'),
+            travel_id: props.match.params.travel_id,
+            own_travel_account: OwnTravelAccount,
+            own_travel_account_pub: OwnTravelAccount_Public,
+            foreign_travel_account: ForeignTravelAccount,
+            foreign_travel_account_pub: ForeignTravelAccount_Public,
             own_cash: OwnCash,
-            own_cash_pub: OwnCard_Public,
+            own_cash_pub: OwnCash_Public,
             foreign_cash: ForeignCash,
             foreign_cash_pub: ForeignCash_Public,
             own_card: OwnCard,
@@ -303,34 +290,39 @@ function ExpensePage(props) {
             foreign_card_pub: ForeignCard_Public
         }
 
-        dispatch(saveConsumption(con))
+        dispatch(saveConsumption(con)) // 개인 소비 내역 저장하기
             .then(response => {
                 if (!response.payload.success) {
                     return alert("Failed to generate")
                 }
             })
-
-        let cost_ = Cost + (TravelAccount_Public - TravelAccount) 
-                + OwnCash_Public + ForeignCash_Public 
-                + OwnCard_Public + ForeignCard_Public
+        
+        // 공동 소비 내역 계산하기
+        let cost_ = Cost 
+                + (OwnTravelAccount_Public-OwnTravelAccount)
+                + (ForeignTravelAccount_Public-ForeignTravelAccount) * Currency
+                + OwnCash_Public + ForeignCash_Public * Currency
+                + OwnCard_Public + ForeignCard_Public * Currency
 
         var persons_ = Persons
-        persons_.push(localStorage.getItem('userId'))
-
-        let contribution = (TravelAccount_Public - TravelAccount) 
-                        + OwnCash_Public + ForeignCash_Public 
-                        + OwnCard_Public + ForeignCard_Public
+        persons_.push(sessionStorage.getItem('userId')) // 사용자 join
+        
+        // 사용자 기여도 계산하기
+        let contribution = (OwnTravelAccount_Public-OwnTravelAccount)
+                        + (ForeignTravelAccount_Public-ForeignTravelAccount) * Currency
+                        + OwnCash_Public + ForeignCash_Public * Currency 
+                        + OwnCard_Public + ForeignCard_Public * Currency
         var contributions_ = Contributions
         contributions_.push(contribution)
 
         let pub = { 
-            travel_id: localStorage.getItem('travelId'),
+            travel_id: props.match.params.travel_id,
             cost: cost_,
             persons: persons_,
             contributions: contributions_
         }
 
-        dispatch(updatePublic(pub))
+        dispatch(updatePublic(pub)) // 공동 소비 내역 수정하기
             .then(response => {
                 if (!response.payload.success) {
                     return alert("Failed to edit")
@@ -341,46 +333,39 @@ function ExpensePage(props) {
     return (
         <div style={{
             textAlign: 'center', margin: '0 auto', paddingTop: '20px', 
-            width: '100%', height: '80vh'
+            width: '100%', height: '80vh', fontFamily: 'Open-Sans'
         }}> 
-        <div id="title">
-            {localStorage.getItem('travelId')}
-        </div>
-            {/* 환율 적용 */}
-            <div>
-                { Load && onSearch(Result) }
-                { Load &&
-                    <div style={{ margin: '0px', height: 'auto' }}>
-                        <Search
-                            style={{ width: '300px', margin: '10px', textAlign: 'right'}}
-                            prefix="환율"
-                            suffix="원"
-                            value={Currency}
-                            readOnly={true}
-                        />
-                    </div>
-                }
+            <div style={{ fontFamily: 'BlackHanSans', fontSize: '24px' }}>
+                {props.match.params.travel_id}&nbsp;
+                <Popover 
+                    title="Currency"
+                    content={`${Currency} KRW`}
+                    arrowPointAtCenter
+                    style={{ fontSize: '12px' }}
+                >
+                    <DollarCircleOutlined />
+                </Popover>
             </div>
             {/* 안내문 */}
             <div style={{ 
-                margin: '0px auto', padding: '5px',
+                margin: '0px auto', marginTop: '5px', padding: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#e6f7ff',
                 borderRadius: '0.2em', fontSize: '12px'
-            }}>왼쪽: 개인 소비 내역 / 오른쪽: 공동 소비 내역
+            }}>Left: Personal / Right: Co-consumption
             </div>
             {/* 경비 관리 */}
             <div style={{ 
                 margin: '10px auto', paddingTop: '5px',
                 width: '300px', height: 'auto',
                 backgroundColor: '#bae7ff',
-                borderRadius: '0.5em'
+                borderRadius: '0.5em', fontSize: '12px'
             }}>
-                <div class="font">
-                    공동 통장&nbsp;&nbsp; 
+                <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                    Joint Bankbook&nbsp;&nbsp; 
                     <Popover 
-                        content="왼쪽에는 공동 통장에서 개인적으로 사용한 금액을, 
-                            오른쪽에는 공동 통장에 입금한 금액을 적으세요"
+                        content="On the left, write down the amount you personally used in the joint account 
+                        and On the right, the amount you deposited in the joint account."
                         arrowPointAtCenter
                         style={{ fontSize: '12px' }}
                     >
@@ -388,21 +373,34 @@ function ExpensePage(props) {
                     </Popover>
                 </div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
-                    <Input 
-                        size="small"
-                        suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right', color: "red" }}
-                        value={TravelAccount}
-                        onChange={onTravelAccountHandler}
+                    <Input
+                        size="small" bordered={false} suffix="KRW" 
+                        style={{ width: '50%', margin: '8px', backgroundColor: 'white', color: "red" }}
+                        value={OwnTravelAccount}
+                        onChange={onOwnTravelAccountHandler}
                     />
-                    <Input 
-                        size="small"
-                        suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
-                        value={TravelAccount_Public}
-                        onChange={onTravelAccountHandler_Public}
+                    <Input
+                        size="small" bordered={false} suffix="KRW" 
+                        style={{ width: '50%', margin: '8px', marginLeft: '0px', backgroundColor: 'white' }}
+                        value={OwnTravelAccount_Public}
+                        onChange={onOwnTravelAccountHandler_Public}
                     />
                 </div>
+                {LoadUnit &&
+                <div style={{ display: 'flex' }}> {/* 타국 화폐 */} 
+                    <Input
+                        size="small" bordered={false} suffix={CurrencyUnit} 
+                        style={{ width: '50%', margin: '8px', marginTop: '0px', backgroundColor: 'white', color: "red" }}
+                        value={ForeignTravelAccount}
+                        onChange={onForeignTravelAccountHandler}
+                    />
+                    <Input
+                        size="small" bordered={false} suffix={CurrencyUnit} 
+                        style={{ width: '50%', margin: '8px', marginLeft: '0px', marginTop: '0px', backgroundColor: 'white' }}
+                        value={ForeignTravelAccount_Public}
+                        onChange={onForeignTravelAccountHandler_Public}
+                    />
+                </div>}
             </div>
             <div style={{ 
                 margin: '10px auto', paddingTop: '5px',
@@ -410,36 +408,32 @@ function ExpensePage(props) {
                 backgroundColor: '#91d5ff',
                 borderRadius: '0.5em'
             }}>
-                <div class="font">현금</div>
+                <div style={{ fontSize: '14px', fontWeight: 'bold' }}>Cash</div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
-                    <Input 
-                        size="small"
-                        suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
+                    <Input
+                        size="small" bordered={false} suffix="KRW" 
+                        style={{ width: '50%', margin: '8px', backgroundColor: 'white' }}
                         value={OwnCash}
                         onChange={onOwnCashHandler}
                     />
-                    <Input 
-                        size="small"
-                        suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
+                    <Input
+                        size="small" bordered={false} suffix="KRW" 
+                        style={{ width: '50%', margin: '8px', marginLeft: '0px', backgroundColor: 'white' }}
                         value={OwnCash_Public}
                         onChange={onOwnCashHandler_Public}
                     />
                 </div>
                 {LoadUnit &&
                 <div style={{ display: 'flex' }}> {/* 타국 화폐 */} 
-                    <Input 
-                        size="small"
-                        suffix={CurrencyUnit} 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
+                    <Input
+                        size="small" bordered={false} suffix={CurrencyUnit} 
+                        style={{ width: '50%', margin: '8px', marginTop: '0px', backgroundColor: 'white' }}
                         value={ForeignCash}
                         onChange={onForeignCashHandler}
                     />
-                    <Input 
-                        size="small"
-                        suffix={CurrencyUnit} 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
+                    <Input
+                        size="small" bordered={false} suffix={CurrencyUnit} 
+                        style={{ width: '50%', margin: '8px', marginLeft: '0px', marginTop: '0px', backgroundColor: 'white' }}
                         value={ForeignCash_Public}
                         onChange={onForeignCashHandler_Public}
                     />
@@ -451,36 +445,32 @@ function ExpensePage(props) {
                 backgroundColor: '#bae7ff',
                 borderRadius: '0.5em'
             }}>
-                <div class="font">개인 카드/통장</div>
+                <div style={{ fontSize: '14px', fontWeight: 'bold' }}>Personal Card</div>
                 <div style={{ display: 'flex' }}> {/* 자국 화폐 */}
-                    <Input 
-                        size="small"
-                        suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
+                    <Input
+                        size="small" bordered={false} suffix="KRW" 
+                        style={{ width: '50%', margin: '8px', backgroundColor: 'white' }}
                         value={OwnCard}
                         onChange={onOwnCardHandler}
                     />
-                    <Input 
-                        size="small"
-                        suffix="KRW" 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
+                    <Input
+                        size="small" bordered={false} suffix="KRW" 
+                        style={{ width: '50%', margin: '8px', marginLeft: '0px', backgroundColor: 'white' }}
                         value={OwnCard_Public}
                         onChange={onOwnCardHandler_Public}
                     />
                 </div>
                 {LoadUnit &&
                 <div style={{ display: 'flex' }}> {/* 타국 화폐 */}
-                    <Input 
-                        size="small"
-                        suffix={CurrencyUnit} 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
+                    <Input
+                        size="small" bordered={false} suffix={CurrencyUnit}  
+                        style={{ width: '50%', margin: '8px', marginTop: '0px', backgroundColor: 'white' }}
                         value={ForeignCard}
                         onChange={onForeignCardHandler}
                     />
-                    <Input 
-                        size="small"
-                        suffix={CurrencyUnit} 
-                        style={{ width: '50%', margin: '10px', fontSize: "12px", textAlign: 'right' }}
+                    <Input
+                        size="small" bordered={false} suffix={CurrencyUnit}  
+                        style={{ width: '50%', margin: '8px', marginLeft: '0px', marginTop: '0px', backgroundColor: 'white' }}
                         value={ForeignCard_Public}
                         onChange={onForeignCardHandler_Public}
                     />
@@ -490,15 +480,15 @@ function ExpensePage(props) {
                 <Button 
                     size="small"
                     type="primary" block 
-                    style={{ width: '30%', margin: '10px', backgroundColor: "#40a9ff", borderColor: "#40a9ff" }}
+                    style={{ width: '40%', margin: '5px', backgroundColor: "#40a9ff", borderColor: "#40a9ff" }}
                     onClick={onCompute}
                 >
-                나의 소비
+                Personal
                 </Button>
                 <InputNumber
                     size="small"
-                    formatter={value => `${value}원`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    style={{ width: '50%', margin: '10px' }}
+                    formatter={value => `￦ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    style={{ width: '50%', margin: '5px' }}
                     readOnly={true}
                     value={MyConsumption}
                 />
@@ -507,15 +497,15 @@ function ExpensePage(props) {
                 <Button 
                     size="small"
                     type="primary" block 
-                    style={{ width: '30%', margin: '10px', backgroundColor: "#40a9ff", borderColor: "#40a9ff" }}
+                    style={{ width: '40%', margin: '5px', backgroundColor: "#40a9ff", borderColor: "#40a9ff" }}
                     onClick={onCompute_Public}
                 >
-                공동 소비
+                Co-consumption
                 </Button>
                 <InputNumber
                     size="small"
-                    formatter={value => `${value}원`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    style={{ width: '50%', margin: '10px' }}
+                    formatter={value => `￦ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    style={{ width: '50%', margin: '5px' }}
                     readOnly={true}
                     value={PublicConsumption}
                 />

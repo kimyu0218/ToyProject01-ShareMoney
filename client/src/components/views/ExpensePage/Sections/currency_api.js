@@ -1,3 +1,2 @@
-export const PROXY_SERVER = "https://cors-anywhere.herokuapp.com/"
-export const API_URL = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON"
-export const API_KEY = "PtQKqKXiJ5g1fbMasCtCI2ok6pyVkKPV"
+export const API_URL = "https://v6.exchangerate-api.com/v6"
+export const API_KEY = "b9cca9362eb365537ff81a91"

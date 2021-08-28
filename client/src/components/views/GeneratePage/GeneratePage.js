@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { generateTravel, checkDuplicateTravelId } from '../../../_actions/travel_action';
 
@@ -10,6 +10,7 @@ function GeneratePage(props) {
     const dispatch = useDispatch();
 
     const [Destination, setDestination] = useState("");
+    const [Available, setAvailable] = useState([]);
     const [TravelId, setTravelId] = useState("");
     const [Personnel, setPersonnel] = useState();
     const [Date, setDate] = useState([]);
@@ -19,50 +20,71 @@ function GeneratePage(props) {
     const onPersonelHandler= (event) => { setPersonnel(Number(event.currentTarget.value)); }
     const onDateHandler = (date, dateString) => { setDate(dateString); }
 
-    const countries = [
-        "아랍에미리트", "호주", "바레인", "브루나이", "캐나다", "스위스",
-        "덴마아크", "영국", "홍콩", "인도네시아", "일본", "한국", "쿠웨이트",
-        "말레이지아", "노르웨이", "뉴질랜드", "사우디", "스웨덴", "싱가포르",
-        "태국", "미국"
-    ]
-
-    const exist = (country) => {
-        if(country === Destination) return true
+    const getCurrencyCode = () => { // 나라 정보 가져오기
+        fetch('http://restcountries.eu/rest/v2/all')
+            .then(response => response.json())
+            .then(response => {
+                setAvailable(response)
+            })
     }
-    const onSearch = () => { return countries.find(exist) }
+
+    useEffect(() => {
+        getCurrencyCode()
+    }, [])
+    
+    // 유효한 나라 이름인지 확인하기
+    const exist = (country) => {
+        if(country.name === Destination)
+            return true
+    }
+    const onSearch = () => { return Available.find(exist) }
 
     const onSubmitHandler = (event) => {
         event.preventDefault();
         
-        if(!onSearch()) return alert("지원하지 않는 나라입니다.")
+        let currencies = ""
+        currencies = onSearch().currencies
 
-        let check = { travel_id: TravelId }
-        
-        dispatch(checkDuplicateTravelId(check))
-            .then(response => {
-                if (!response.payload.permit) {
-                    return alert("사용할 수 없는 아이디입니다.")
+        if(currencies === "") return alert("Country not found.")
+        else {
+            let currencyCode = ""
+            if(currencies.length > 1) {
+                for(let i = 0; i < currencies.length; i++) {
+                    if(Destination === currencies[i].name.split(" ")[0]) {
+                        currencyCode = currencies[i].code
+                        break
+                    }
                 }
-            })
+            }
+            else currencyCode = currencyCode[0].code
+            
+            let check = { travel_id: TravelId }
+            
+            dispatch(checkDuplicateTravelId(check)) // 아이디 중복 체크
+                .then(response => {
+                    if (!response.payload.permit) {
+                        return alert("This ID is not available.")
+                    }
+                })
 
-        let body = {
-            destination: Destination,
-            travel_id: TravelId,
-            personnel: Personnel,
-            persons: [localStorage.getItem('userId')],
-            date: Date
+            let body = {
+                destination: Destination,
+                travel_id: TravelId,
+                personnel: Personnel,
+                currency_unit: currencyCode,
+                persons: [sessionStorage.getItem('userId')],
+                date: Date
+            }
+
+            dispatch(generateTravel(body)) 
+                .then(response => {
+                    if (response.payload.success) { // 여행 정보 생성 -> 여행 경비 등록 페이지로 이동
+                        props.history.push(`/expense/${TravelId}/${currencyCode}`)
+                    } else {
+                        return alert("Failed to generate")
+                    }
+                })
         }
-
-        dispatch(generateTravel(body))
-            .then(response => {
-                if (response.payload.success) {
-                    localStorage.setItem('country', Destination)
-                    localStorage.setItem('travelId', TravelId)
-                    props.history.push('/expense')
-                } else {
-                    return alert("Failed to generate")
-                }
-            })
     }
 
     const formItemLayout = {

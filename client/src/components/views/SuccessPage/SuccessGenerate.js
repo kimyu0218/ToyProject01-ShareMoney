@@ -8,9 +8,9 @@ function SuccessGenerate(props) {
         <Result
             status="success"
             title="Successfully Generate a New Travel!"
-            subTitle={`'${localStorage.getItem('travelId')}' is generated`}
+            subTitle={`'${props.match.params.travel_id}' is generated`}
             extra={[
-            <Link to="../edit">
+            <Link to="../../edit">
                 <Button type="primary" key="console">
                     Go to My Travels
                 </Button>

@@ -11,11 +11,12 @@ function RightMenu(props) {
   const logoutHandler = () => {
     axios.get('/api/users/logout').then(response => {
       if (response.status === 200) {
-        localStorage.setItem('edit', false)
-        localStorage.setItem('join', false)
-        localStorage.setItem('userId', '')
-        localStorage.setItem('travelId', '')
-        localStorage.setItem('country', '')
+        sessionStorage.setItem('edit', false)
+        sessionStorage.setItem('join', false)
+        sessionStorage.setItem('userId', '')
+        sessionStorage.setItem('travelId', '')
+        sessionStorage.setItem('country', '')
+        sessionStorage.setItem('notComplete', 0)
         props.history.push("/login");
       } else {
         alert('Log Out Failed')

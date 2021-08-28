@@ -28,13 +28,11 @@ function LoginPage(props) {
 
         dispatch(loginUser(body))
             .then(response => {
-                if (response.payload.loginSuccess) {
-                    localStorage.setItem('userId', Id)
-                    localStorage.setItem('edit', false)
-                    localStorage.setItem('join', false)
-                    props.history.push('/')
+                if (response.payload.loginSuccess) { // 로그인 성공 -> 사용자 ID 저장, 랜딩 페이지로 이동
+                    sessionStorage.setItem("userId", Id) 
+                    props.history.push("/")
                 } else {
-                    alert('아이디나 비밀번호가 일치하지 않습니다.')
+                    alert('You entered the wrong ID or password.')
                 }
             })
     }

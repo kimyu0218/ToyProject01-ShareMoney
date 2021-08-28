@@ -17,41 +17,42 @@ function JoinPage(props) {
         
         let body = { travel_id: TravelId }
 
-        dispatch(joinTravel(body))
+        dispatch(joinTravel(body)) // 여행 ID로 여행에 join 하기
             .then(response => {
                 if (response.payload.success) {
-                    localStorage.setItem('country', response.payload.data.destination)
+
+                    // 여행 ID 등록 여부 검사하기
                     var persons_ = response.payload.data.persons
                     for(let i = 0; i < persons_.length; i++){
-                        if(persons_[i] === localStorage.getItem('userId')) {
-                            alert('이미 추가한 아이디입니다. MyTravels 페이지로 이동합니다.')
+                        if(persons_[i] === sessionStorage.getItem('userId')) { // 이미 등록한 경우 내 여행 정보 페이지로 이동
+                            alert('This ID has already been added. Go to the My Travels page.')
                             props.history.push('/edit')
                         }
                     }
-                    persons_.push(localStorage.getItem('userId'))
+                    persons_.push(sessionStorage.getItem('userId')) 
 
+                    // 여행 인원 초과 여부 검사하기
                     if(persons_.length > response.payload.data.personnel) 
-                        return alert('해당 인원 수를 초과했습니다.')
+                        return alert('The number of people has been exceeded.')
 
                     let edit = {
                         travel_id: TravelId,
                         persons: persons_
                     }
-                    editHandler(edit)
+                    editHandler(edit, response.payload.data.currency_unit) // 여행 join
                 } else {
-                    return alert( "존재하지 않는 아이디입니다.")
+                    return alert("This ID does not exist.")
                 }
             })
     }
 
-    const editHandler = (body) => {
+    const editHandler = (body, currencyCode) => {
 
         dispatch(editPersons(body))
             .then(response => {
-                if (response.payload.success) {
-                    localStorage.setItem('travelId', TravelId)
-                    localStorage.setItem('join', true)
-                    props.history.push('/expense')
+                if (response.payload.success) { // 여행 join -> 여행 경비 등록 페이지로 이동
+                    sessionStorage.setItem('join', true)
+                    props.history.push(`/expense/${TravelId}/${currencyCode}`)
                 } else {
                     return alert("Failed to edit")
                 }
@@ -108,7 +109,6 @@ function JoinPage(props) {
             </Form>
         </div>
     )
-    
 }
 
 export default JoinPage

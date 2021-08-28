@@ -8,7 +8,7 @@ function LeftMenu(props) {
       <a href="/">Home</a>
     </Menu.Item>
     <Menu.Item key="otherPage">
-      <Badge count={localStorage.getItem('notComplete')}>
+      <Badge count={sessionStorage.getItem('notComplete')}>
         <a href="/edit">My Travels</a>
       </Badge>
     </Menu.Item>

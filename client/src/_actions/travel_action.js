@@ -67,3 +67,13 @@ export function deleteTravel(dataToSubmit) {
         payload: request
     }
 }
+
+/*export function getCurrency(dataToSubmit) {
+    const request = axios.post('/api/travels/getCurrency', dataToSubmit)
+    .then(response => response.data)
+
+    return {
+        type: GET_TRAVEL_CURRENCY,
+        payload: request
+    }
+}*/

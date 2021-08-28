@@ -25,22 +25,19 @@ function RegisterPage(props) {
 
         let check1 = { id: Id }
 
-        dispatch(checkDuplicateId(check1))
+        dispatch(checkDuplicateId(check1)) // 아이디 중복 체크
             .then(response => {
-                if (response.payload.permit) {
-
-                } else {
-                    return alert("사용할 수 없는 아이디입니다.")
+                if (!response.payload.permit) {
+                    return alert("This ID is not available.")
                 }
             })
 
         let check2 = { email: Email }
 
-        dispatch(checkDuplicateEmail(check2))
+        dispatch(checkDuplicateEmail(check2)) // 이메일 중복 체크
             .then(response => {
-                if (response.payload.permit) {
-                } else {
-                    return alert("사용할 수 없는 이메일입니다.")
+                if (!response.payload.permit) {
+                    return alert("This Email is not available.")
                 }
             })
         
@@ -52,8 +49,8 @@ function RegisterPage(props) {
 
         dispatch(registerUser(body))
             .then(response => {
-                if (response.payload.success) {
-                    alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.")
+                if (response.payload.success) { // 회원가입 성공 -> 로그인 페이지로 이동
+                    alert("Membership registration has been completed. Please proceed to login.")
                     props.history.push('/login')
                 } else {
                     alert("Failed to sign up")

@@ -8,8 +8,9 @@ function SuccessEdit(props) {
         <Result
             status="success"
             title="Successfully Edit the Travel!"
+            subTitle={`'${props.match.params.travel_id}' is edited`}
             extra={[
-            <Link to="../edit">
+            <Link to="../../edit">
                 <Button type="primary" key="console">
                     Go to My Travels
                 </Button>

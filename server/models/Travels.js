@@ -9,6 +9,9 @@ const travelSchema = mongoose.Schema({
         type: String,
         unique: 1
     },
+    currency_unit: {
+        type: String
+    },
     personnel: {
         type: Number
     },

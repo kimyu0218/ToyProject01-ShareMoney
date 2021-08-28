@@ -6,7 +6,7 @@ import { getPublicDetail } from '../../../_actions/public_action';
 import { Alert } from 'antd';
 import 'antd/dist/antd.css';
 
-function LandingPage() {
+function LandingPage(props) {
 
     const dispatch = useDispatch()
 
@@ -15,16 +15,15 @@ function LandingPage() {
 
     useEffect(() => {
 
-        localStorage.setItem('edit', false)
-        localStorage.setItem('join', false)
-
-        let body = { user_id: localStorage.getItem('userId') }
+        let body = { user_id: sessionStorage.getItem('userId') }
 
         dispatch(findTravel(body))
             .then(response => {
                 if (response.payload.success) {
                     findNotComplete(response.payload.travels)
                     setLoad(true)
+                    sessionStorage.setItem('edit', false)
+                    sessionStorage.setItem('join', false)
                 } 
                 else return alert("Falied to load")
             })
@@ -61,7 +60,7 @@ function LandingPage() {
 
     const alertNotComplete = (count) => { // 완료되지 않은 작업이 있는 경우 알림
         if(count !== 0) {
-            localStorage.setItem("notComplete", count)
+            sessionStorage.setItem("notComplete", count)
             return (
                 <Alert
                     message="Travel information"

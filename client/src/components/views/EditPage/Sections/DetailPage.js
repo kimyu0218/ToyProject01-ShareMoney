@@ -19,7 +19,7 @@ function DetailPage(props) {
 
         let body= { travel_id: props.match.params.travel_id }
 
-        dispatch(getPublicDetail(body))
+        dispatch(getPublicDetail(body)) // 여행 공동 소비 내역 가져오기
             .then(response => {
                 if (response.payload.success) {
                     setCost(response.payload.data.cost)
@@ -34,24 +34,23 @@ function DetailPage(props) {
             })
     }, [])
 
-    const getContribution = (contribution) => {
+    const getContribution = (contribution) => { // 기여도 출력하기
         return (
             <InputNumber
-                size="small"
-                bordered={false}
-                formatter={value => `${value}원`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                size="small" bordered={false}
+                formatter={value => `${value} ₩`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 readOnly={true}
                 value={contribution}
             />
         )
     }
 
-    const renderCompanions = Companions.map((companion, index) => {
+    const renderCompanions = Companions.map((companion, index) => { // 여행자 출력하기
 
-        if(Cost/Personnel < Contributions[index]) {
+        if(Cost/Personnel < Contributions[index]) { // 돈을 더 받아야 하는 사람
             return (
                 <Col xs={{ span: 12 }} lg={{ span: 8 }}>
-                <Popover content={getContribution(Contributions[index])} title="납부 금액">
+                <Popover content={getContribution(Math.round(Contributions[index]))} title="Amout paid">
                     <Card>
                     <Statistic
                             title={`${companion}`}
@@ -59,7 +58,7 @@ function DetailPage(props) {
                             precision={0}
                             valueStyle={{ color: '#3f8600', fontSize: '1.2rem' }}
                             prefix={<UpOutlined />}
-                            suffix="원 미수령"
+                            suffix="₩"
                         /> 
                     </Card>
                 </Popover>
@@ -69,7 +68,7 @@ function DetailPage(props) {
         else if(Cost/Personnel === Contributions[index]) {
             return (
                 <Col xs={{ span: 12 }} lg={{ span: 8 }}>
-                <Popover content={getContribution(Contributions[index])} title="납부 금액" >
+                <Popover content={getContribution(Math.round(Contributions[index]))} title="Amout paid" >
                     <Card >
                     <Statistic
                             title={`${companion}`}
@@ -77,17 +76,17 @@ function DetailPage(props) {
                             precision={0}
                             valueStyle={{ color: '#1890ff', fontSize: '1.2rem' }}
                             prefix={<MinusOutlined />}
-                            suffix="원"
+                            suffix="₩"
                         /> 
                     </Card>
                 </Popover>
                 </Col>
             )
         }
-        else {
+        else { // 돈을 더 내야하는 사람
             return (
                 <Col xs={{ span: 12 }} lg={{ span: 8 }}>
-                <Popover content={getContribution(Contributions[index])} title="납부 금액">
+                <Popover content={getContribution(Math.round(Contributions[index]))} title="Amout paid">
                     <Card >
                     <Statistic
                             title={`${companion}`}
@@ -95,7 +94,7 @@ function DetailPage(props) {
                             precision={0}
                             valueStyle={{ color: '#cf1322', fontSize: '1.2rem' }}
                             prefix={<DownOutlined />}
-                            suffix="원 미납"
+                            suffix="₩"
                         /> 
                     </Card>
                 </Popover>
@@ -111,9 +110,9 @@ function DetailPage(props) {
         }}> 
             <div id="title">{props.match.params.travel_id}</div>
             <div className="site-card-wrapper" style={{ marginTop: '20px'}}>
-            <Row gutter={[0, 16]}>
-                {Load && renderCompanions}
-            </Row>
+                <Row gutter={[0, 16]}>
+                    {Load && renderCompanions}
+                </Row>
             </div>
         </div>
     )

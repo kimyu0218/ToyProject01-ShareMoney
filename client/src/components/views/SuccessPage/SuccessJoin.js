@@ -8,8 +8,9 @@ function SuccessJoin(props) {
         <Result
             status="success"
             title="Successfully Join the Travel!"
+            subTitle={`'${props.match.params.travel_id}' is joined`}
             extra={[
-            <Link to="../edit">
+            <Link to="../../edit">
                 <Button type="primary" key="console">
                     Go to My Travels
                 </Button>
