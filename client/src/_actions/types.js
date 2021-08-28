@@ -11,7 +11,6 @@ export const JOIN_TRAVEL = "join_travel";
 export const EDIT_PERSONS = "edit_persons";
 export const FIND_MY_TRAVEL = "find_my_travel";
 export const DELETE_TRAVEL = "delete_travel";
-//export const GET_TRAVEL_CURRENCY = "get_travel_currency";
 
 export const SAVE_CONSUMPTION = "save_consumption";
 export const BRING_UP_CONSUMPTION = "bring_up_consumption";

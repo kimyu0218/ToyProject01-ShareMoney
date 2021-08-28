@@ -21,8 +21,6 @@ export default function travel(state = {}, action) {
             return { ...state, success: action.payload }
         case DELETE_TRAVEL:
             return { ...state, success: action.payload }
-        /*case GET_TRAVEL_CURRENCY:
-            return { ...state, success: action.payload }*/
         default:
             return state;
     }
