@@ -65,8 +65,9 @@ function EditPage(props) {
         }
     }
 
-    const Edit = (travelId) => {
+    const Edit = (travelId, country) => {
         localStorage.setItem('edit', true)
+        localStorage.setItem('country', country)
         localStorage.setItem('travelId', travelId)
         props.history.push('/expense')
     }
@@ -127,7 +128,7 @@ function EditPage(props) {
                         size="small"
                         style={{ textAlign: 'left', lineHeight: '200%' }}
                         actions={[
-                            <EditOutlined key="edit" onClick={() => Edit(travel.travel_id)} />,
+                            <EditOutlined key="edit" onClick={() => Edit(travel.travel_id, travel.destination)} />,
                             <DeleteOutlined key="delete" onClick={() => Delete(travel._id, travel.persons)}/>,
                         ]}
                     >   
