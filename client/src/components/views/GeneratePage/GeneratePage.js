@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { generateTravel, checkDuplicateTravelId } from '../../../_actions/travel_action';
 
-import { Form, Input, Button, DatePicker } from 'antd';
+import { Form, Input, Button, DatePicker, AutoComplete } from 'antd';
 import 'antd/dist/antd.css';
 
 function GeneratePage(props) {
@@ -11,11 +11,13 @@ function GeneratePage(props) {
 
     const [Destination, setDestination] = useState("");
     const [Available, setAvailable] = useState([]);
+    const [Countries, setCountries] = useState([]);
     const [TravelId, setTravelId] = useState("");
     const [Personnel, setPersonnel] = useState();
     const [Date, setDate] = useState([]);
+    const [Load, setLoad] = useState(false);
 
-    const onDestinationHandler = (event) => { setDestination(event.currentTarget.value); }
+    const onDestinationHandler = (value) => { setDestination(value); }
     const onTravelIdHandler = (event) => { setTravelId(event.currentTarget.value); }
     const onPersonelHandler= (event) => { setPersonnel(Number(event.currentTarget.value)); }
     const onDateHandler = (date, dateString) => { setDate(dateString); }
@@ -25,6 +27,12 @@ function GeneratePage(props) {
             .then(response => response.json())
             .then(response => {
                 setAvailable(response)
+                let countries = response
+                let tmp = []
+                for(let i = 0; i < countries.length; i++) 
+                    tmp.push({ value: countries[i].name })
+                setCountries(tmp)
+                setLoad(true)
             })
     }
 
@@ -34,7 +42,7 @@ function GeneratePage(props) {
     
     // 유효한 나라 이름인지 확인하기
     const exist = (country) => {
-        if(country.name === Destination)
+        if(country.name.toLowerCase() === Destination.toLowerCase())
             return true
     }
     const onSearch = () => { return Available.find(exist) }
@@ -42,21 +50,21 @@ function GeneratePage(props) {
     const onSubmitHandler = (event) => {
         event.preventDefault();
         
-        let currencies = ""
-        currencies = onSearch().currencies
-
-        if(currencies === "") return alert("Country not found.")
+        let currencies = onSearch()
+        
+        if(currencies === undefined) return alert("Country not found.")
         else {
+            currencies = currencies.currencies
             let currencyCode = ""
             if(currencies.length > 1) {
                 for(let i = 0; i < currencies.length; i++) {
-                    if(Destination === currencies[i].name.split(" ")[0]) {
+                    if(Destination.toLowerCase() === currencies[i].name.split(" ")[0].toLowerCase()) {
                         currencyCode = currencies[i].code
                         break
                     }
                 }
             }
-            else currencyCode = currencyCode[0].code
+            else currencyCode = currencies[0].code
             
             let check = { travel_id: TravelId }
             
@@ -109,6 +117,7 @@ function GeneratePage(props) {
             display: 'flex', justifyContent: 'center', alignItems: 'center',
             width: '100%', height: '80vh'
         }}>
+            {Load &&
             <Form
                 {...formItemLayout}
                 name="generate"
@@ -125,7 +134,15 @@ function GeneratePage(props) {
                     },
                     ]}
                 >
-                    <Input value={Destination} placeholder="Country" onChange={onDestinationHandler}/>
+                    <AutoComplete
+                        options={Countries}
+                        placeholder="Country" 
+                        filterOption={(inputValue, option) =>
+                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                        }
+                        value={Destination}
+                        onChange={onDestinationHandler}
+                    />
                 </Form.Item>
 
                 <Form.Item
@@ -172,7 +189,7 @@ function GeneratePage(props) {
                     Generate
                     </Button>
                 </Form.Item>
-            </Form>
+            </Form>}
         </div>
     )
 }

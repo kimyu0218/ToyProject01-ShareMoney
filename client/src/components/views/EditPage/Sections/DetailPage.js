@@ -4,6 +4,7 @@ import { getPublicDetail } from '../../../../_actions/public_action';
 
 import { Card, Col, Row, Statistic, Popover, InputNumber } from 'antd';
 import { UpOutlined, DownOutlined, MinusOutlined } from '@ant-design/icons';
+import { ResponsivePie } from '@nivo/pie'
 
 function DetailPage(props) {
 
@@ -103,16 +104,48 @@ function DetailPage(props) {
         }
     })
 
+    const showGraph = (companions, contributions) => {
+        let data = []
+        for(let i = 0; i < companions.length; i++){
+            data.push({
+                id: companions[i],
+                label: companions[i],
+                value: contributions[i]
+            })
+        }
+
+        return (
+            <ResponsivePie
+                data={data}
+                margin={{ top: 20, right: 40, bottom: 20, left: 40 }}
+                innerRadius={0.5} padAngle={1} cornerRadius={3}
+                activeOuterRadiusOffset={8}
+                colors={{ scheme: 'blues' }}
+                borderWidth={1} borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.2 ] ] }}
+                sortByValue={true}
+                arcLinkLabelsSkipAngle={10}
+                arcLinkLabelsTextColor={{ theme: 'background' }}
+                arcLinkLabelsThickness={2}
+                arcLinkLabelsColor={{ theme: 'background' }}
+                arcLabelsSkipAngle={10}
+                arcLabel="id"
+                arcLabelsTextColor={{ from: 'color', modifiers: [ [ 'darker', 2 ] ] }}
+            />
+        )
+    }
     return (
         <div style={{
             textAlign: 'center', margin: '0 auto', paddingTop: '20px', 
             width: '90%', height: '80vh', overflow: 'auto'
         }}> 
-            <div id="title">{props.match.params.travel_id}</div>
+            <div style={{ fontFamily: 'BlackHanSans', fontSize: '24px' }}>{props.match.params.travel_id}</div>
             <div className="site-card-wrapper" style={{ marginTop: '20px'}}>
                 <Row gutter={[0, 16]}>
                     {Load && renderCompanions}
                 </Row>
+            </div>
+            <div style={{ width: '90%', height: '50%', margin: '0 auto' }}>
+                {Load && showGraph(Companions, Contributions)}
             </div>
         </div>
     )
