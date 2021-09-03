@@ -10,4 +10,4 @@ Database: mongoDB <br/>
 
 |frontend|backend|
 |------|------|
-|테스트1|테스트2|
+|<img src=https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=white%22"/>|테스트2|
