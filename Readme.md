@@ -10,11 +10,11 @@
 
 |메인화면|내비게이션바|
 |------|------|
-|<img src='https://user-images.githubusercontent.com/70785620/131947630-7295ee93-be3a-48f0-80c0-239cbdb63683.png'>|<img src='https://user-images.githubusercontent.com/70785620/131947636-5c56a140-8353-4e45-9a82-d9d1a2c25b4b.png'>|
+|<img src='https://user-images.githubusercontent.com/70785620/131947630-7295ee93-be3a-48f0-80c0-239cbdb63683.png' width="250px">|<img src='https://user-images.githubusercontent.com/70785620/131947636-5c56a140-8353-4e45-9a82-d9d1a2c25b4b.png' width="250px">|
 
 |Generate|Expense|
 |------|------|
-|<img src='https://user-images.githubusercontent.com/70785620/131947646-08294aca-b4af-4f5a-a304-75efc4809633.png'>|<img src='https://user-images.githubusercontent.com/70785620/131947657-f0574ebc-3a7a-4dd4-80fb-e2910fe28b2d.png'>|
+|<img src='https://user-images.githubusercontent.com/70785620/131947646-08294aca-b4af-4f5a-a304-75efc4809633.png' width="250px">|<img src='https://user-images.githubusercontent.com/70785620/131947657-f0574ebc-3a7a-4dd4-80fb-e2910fe28b2d.png' width="250px">|
 
 |Join|MyTravels|Detail|
 |------|------|------|
