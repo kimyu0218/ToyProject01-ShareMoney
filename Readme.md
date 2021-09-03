@@ -1,12 +1,12 @@
-#ShareMoney💰
+# ShareMoney💰
 ------------
-##프로젝트 소개
+## 프로젝트 소개
 ------------
-##Tech Stack
+## Tech Stack
 
-Frontend: React
-Backend: Nodejs
-Database: mongoDB
+Frontend: React <br/>
+Backend: Nodejs <br/>
+Database: mongoDB <br/>
 
 |frontend|backend|
 |------|------|
