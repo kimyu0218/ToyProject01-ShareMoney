@@ -1,7 +1,7 @@
 # ShareMoney💰
-------------
+
 ## 프로젝트 소개
-------------
+
 ## Tech Stack
 
 Frontend: React <br/>
