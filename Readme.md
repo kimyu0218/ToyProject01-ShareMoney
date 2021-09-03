@@ -18,7 +18,7 @@
 
 |Join|MyTravels|Detail|
 |------|------|------|
-|<img src='https://user-images.githubusercontent.com/70785620/131947668-1effb268-388c-41d1-ba77-c9435e61004d.png'>|<img src='https://user-images.githubusercontent.com/70785620/131947679-08f8481f-7f80-4337-af50-8b0a60b65cb6.png'>|<img src='https://user-images.githubusercontent.com/70785620/131947684-fd632b45-8d36-44ed-8968-b18f80314f36.png'>|
+|<img src='https://user-images.githubusercontent.com/70785620/131947668-1effb268-388c-41d1-ba77-c9435e61004d.png' width="250px">|<img src='https://user-images.githubusercontent.com/70785620/131947679-08f8481f-7f80-4337-af50-8b0a60b65cb6.png' width="250px">|<img src='https://user-images.githubusercontent.com/70785620/131947684-fd632b45-8d36-44ed-8968-b18f80314f36.png' width="250px">|
 
 
 ## Tech Stack
