@@ -5,7 +5,7 @@
 
 |로그인|회원가입|
 |------|------|
-|<img src='https://user-images.githubusercontent.com/70785620/131947618-b9718a88-4fd4-4ed5-a3c7-ea6d2f68f058.png' width="250px">|<img src='https://user-images.githubusercontent.com/70785620/131947627-3102369e-0003-48bf-bfe4-d1413ec6bd25.png' width="2500px">|
+|<img src='https://user-images.githubusercontent.com/70785620/131947618-b9718a88-4fd4-4ed5-a3c7-ea6d2f68f058.png' width="250px">|<img src='https://user-images.githubusercontent.com/70785620/131947627-3102369e-0003-48bf-bfe4-d1413ec6bd25.png' width="250px">|
 
 
 |메인화면|내비게이션바|
